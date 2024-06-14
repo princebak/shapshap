@@ -1,17 +1,8 @@
 import ShopLayout1 from "components/layouts/shop-layout-1";
 import MarketOnePageView from "pages-sections/market-1/page-view";
+import getMetadata from "../utils/metadata";
 
-export const metadata = {
-  title: "ShapShap",
-  description: `ShapShap255 is a E-commerce platform with multiple Vendors.`,
-  authors: [
-    {
-      name: "UI-LIB",
-      url: "https://ui-lib.com",
-    },
-  ],
-  keywords: ["e-commerce", "e-commerce template", "next.js", "react"],
-};
+export const metadata = getMetadata();
 
 export default async function MarketOne() {
   return (
