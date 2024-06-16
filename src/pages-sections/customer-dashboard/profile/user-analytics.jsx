@@ -45,11 +45,6 @@ export default function UserAnalytics({
           <FlexBetween flexWrap="wrap" flex={1}>
             <div>
               <H5>{`${user.name.firstName} ${user.name.lastName}`}</H5>
-
-              <FlexBox alignItems="center" gap={1}>
-                <Paragraph color="grey.600">Balance:</Paragraph>
-                <Paragraph color="primary.main">{currency(500)}</Paragraph>
-              </FlexBox>
             </div>
 
             <Paragraph color="grey.600" letterSpacing={3}>
