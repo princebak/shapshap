@@ -1,9 +1,9 @@
-import { BrandsPageView } from "pages-sections/vendor-dashboard/brands/page-view"; 
+import { CustomersPageView } from "pages-sections/vendor-dashboard/customers/page-view"; 
 // API FUNCTIONS
 
 import api from "utils/__api__/dashboard";
 export const metadata = {
-  title: "Brands - Bazaar Next.js E-commerce Template",
+  title: "Customers - Bazaar Next.js E-commerce Template",
   description: `Bazaar is a React Next.js E-commerce template. Build SEO friendly Online store, delivery app and Multi vendor store`,
   authors: [{
     name: "UI-LIB",
@@ -11,7 +11,7 @@ export const metadata = {
   }],
   keywords: ["e-commerce", "e-commerce template", "next.js", "react"]
 };
-export default async function Brands() {
-  const brands = await api.brands();
-  return <BrandsPageView brands={brands} />;
+export default async function Customers() {
+  const customers = await api.customers();
+  return <CustomersPageView customers={customers} />;
 }

@@ -292,11 +292,11 @@ const navbarNavigation = [
         child: [
           {
             title: "All products",
-            url: "/admin/products",
+            url: "/vendor/products",
           },
           {
             title: "Add/Edit product",
-            url: "/admin/products/lord-2019",
+            url: "/vendor/products/lord-2019",
           },
         ],
       },

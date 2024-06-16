@@ -1,35 +1,41 @@
-export const cardList = [{
-  id: 1,
-  title: "Order",
-  amount1: "32,350",
-  amount2: 9350,
-  color: "info.main",
-  percentage: "25.25%"
-}, {
-  id: 2,
-  title: "Sold Items",
-  amount1: "2,360",
-  amount2: 1350,
-  color: "error.main",
-  percentage: "2.65%",
-  status: "down"
-}, {
-  id: 3,
-  title: "Gross Sale",
-  amount1: "$12,460.25",
-  amount2: 11350,
-  color: "success.main",
-  percentage: "10.25%"
-}, {
-  id: 4,
-  title: "Total Shipping Cost",
-  amount1: "$6,240",
-  amount2: 4350,
-  color: "error.main",
-  percentage: "13.15%",
-  status: "down"
-}];
-export const recentPurchase = [{
+export const cardList = [
+  {
+    id: 1,
+    title: "Order",
+    amount1: "32,350",
+    amount2: 9350,
+    color: "info.main",
+    percentage: "25.25%",
+  },
+  {
+    id: 2,
+    title: "Sold Items",
+    amount1: "2,360",
+    amount2: 1350,
+    color: "error.main",
+    percentage: "2.65%",
+    status: "down",
+  },
+  {
+    id: 3,
+    title: "Gross Sale",
+    amount1: "$12,460.25",
+    amount2: 11350,
+    color: "success.main",
+    percentage: "10.25%",
+  },
+  {
+    id: 4,
+    title: "Total Order",
+    amount1: "$6,240",
+    amount2: 4350,
+    color: "error.main",
+    percentage: "13.15%",
+    status: "down",
+  },
+];
+
+/* export const recentPurchase = [{
   id: "#6d3wedo5",
   amount: 152.25,
   payment: "Success",
@@ -75,4 +81,6 @@ export const stockOutProducts = [{
   amount: 255.25,
   stock: "00",
   product: "Jeans Pant"
-}];
+}
+
+]; */

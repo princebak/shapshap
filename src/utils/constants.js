@@ -6,3 +6,9 @@ export const layoutConstant = {
   mobileHeaderHeight: 64,
   grocerySidenavWidth: 280
 };
+
+export const userType = {
+  ADMIN : "admin",
+  MERCHANT : "merchant",
+  BUYER : "buyer"
+}
