@@ -4,26 +4,24 @@ import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer"; 
+import TableContainer from "@mui/material/TableContainer";
 // GLOBAL CUSTOM COMPONENTS
 
 import Scrollbar from "components/scrollbar";
-import { TableHeader, TablePagination } from "components/data-table"; 
+import { TableHeader, TablePagination } from "components/data-table";
 // GLOBAL CUSTOM HOOK
 
-import useMuiTable from "hooks/useMuiTable"; 
+import useMuiTable from "hooks/useMuiTable";
 // LOCAL CUSTOM COMPONENTS
 
 import { tableHeading } from "../table-heading";
 import VendorEarningRow from "../v-earning-row";
-import PageWrapper from "../../page-wrapper"; 
+import PageWrapper from "../../page-wrapper";
+import SearchArea from "pages-sections/vendor-dashboard/search-box";
 // CUSTOM DATA MODEL
 
-
 // =============================================================================
-export default function EarningHistoryPageView({
-  earnings
-}) {
+export default function EarningHistoryPageView({ earnings }) {
   const {
     order,
     orderBy,
@@ -31,30 +29,53 @@ export default function EarningHistoryPageView({
     rowsPerPage,
     filteredList,
     handleChangePage,
-    handleRequestSort
+    handleRequestSort,
   } = useMuiTable({
     listData: earnings,
-    defaultSort: "no"
+    defaultSort: "no",
   });
-  return <PageWrapper title="Earning History">
+  return (
+    <PageWrapper title="Earning History">
+      <SearchArea
+        handleSearch={() => {}}
+        buttonText="Request Payout"
+        url="#"
+        searchPlaceholder="Search Earning..."
+      />
       <Card>
         <Scrollbar>
-          <TableContainer sx={{
-          minWidth: 1100
-        }}>
+          <TableContainer
+            sx={{
+              minWidth: 1100,
+            }}
+          >
             <Table>
-              <TableHeader order={order} hideSelectBtn orderBy={orderBy} heading={tableHeading} rowCount={earnings.length} numSelected={selected.length} onRequestSort={handleRequestSort} />
+              <TableHeader
+                order={order}
+                hideSelectBtn
+                orderBy={orderBy}
+                heading={tableHeading}
+                rowCount={earnings.length}
+                numSelected={selected.length}
+                onRequestSort={handleRequestSort}
+              />
 
               <TableBody>
-                {filteredList.map((item, index) => <VendorEarningRow row={item} key={index} />)}
+                {filteredList.map((item, index) => (
+                  <VendorEarningRow row={item} key={index} />
+                ))}
               </TableBody>
             </Table>
           </TableContainer>
         </Scrollbar>
 
         <Stack alignItems="center" my={4}>
-          <TablePagination onChange={handleChangePage} count={Math.ceil(earnings.length / rowsPerPage)} />
+          <TablePagination
+            onChange={handleChangePage}
+            count={Math.ceil(earnings.length / rowsPerPage)}
+          />
         </Stack>
       </Card>
-    </PageWrapper>;
+    </PageWrapper>
+  );
 }
