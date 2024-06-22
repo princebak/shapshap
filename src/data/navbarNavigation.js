@@ -154,131 +154,19 @@ const navbarNavigation = [
     url: "/",
   },
   {
+    title: "Articles",
     megaMenu: false,
     megaMenuWithSub: false,
-    title: "Pages",
-    child: [
-      {
-        title: "Sales",
-        url: "/sales-2",
-      },
-      {
-        title: "Vendor",
-        child: [
-          {
-            title: "All vendors",
-            url: "/shops",
-          },
-          {
-            title: "Vendor store",
-            url: "/shops/scarlett-beauty",
-          },
-        ],
-      },
-      {
-        title: "Shop",
-        child: [
-          {
-            title: "Search product",
-            url: "/products/search/mobile phone",
-          },
-          {
-            title: "Single product",
-            url: "/products/lord-2019",
-          },
-          {
-            title: "Cart",
-            url: "/cart",
-          },
-          {
-            title: "Checkout",
-            url: "/checkout",
-          },
-          {
-            title: "Order confirmation",
-            url: "/order-confirmation",
-          },
-        ],
-      },
-      {
-        title: "Auth",
-        child: [
-          {
-            title: "Login",
-            url: "/login",
-          },
-          {
-            title: "Register",
-            url: "/register",
-          },
-        ],
-      },
-    ],
+    url: "/articles",
   },
   {
+    title: "Shops",
     megaMenu: false,
     megaMenuWithSub: false,
-    title: "User Account",
-    child: [
-      {
-        title: "Orders",
-        child: [
-          {
-            title: "Order List",
-            url: "/orders",
-          },
-          {
-            title: "Order Details",
-            url: "/orders/f0ba538b-c8f3-45ce-b6c1-209cf07ba5f8",
-          },
-        ],
-      },
-      {
-        title: "Profile",
-        child: [
-          {
-            title: "View Profile",
-            url: "/profile",
-          },
-          {
-            title: "Edit Profile",
-            url: "/profile/e42e28ea-528f-4bc8-81fb-97f658d67d75",
-          },
-        ],
-      },
-      {
-        title: "Address",
-        child: [
-          {
-            title: "Address List",
-            url: "/address",
-          },
-          {
-            title: "Add Address",
-            url: "/address/d27d0e28-c35e-4085-af1e-f9f1b1bd9c34",
-          },
-        ],
-      },
-      {
-        title: "Support tickets",
-        child: [
-          {
-            title: "All tickets",
-            url: "/support-tickets",
-          },
-          {
-            title: "Ticket details",
-            url: "/support-tickets/when-will-my-product-arrive",
-          },
-        ],
-      },
-      {
-        title: "Wishlist",
-        url: "/wish-list",
-      },
-    ],
+    url: "/shops",
   },
-  {
+
+  /*   {
     megaMenu: false,
     megaMenuWithSub: false,
     title: "Vendor Account",
@@ -318,6 +206,6 @@ const navbarNavigation = [
         url: "/vendor/account-settings",
       },
     ],
-  },
+  }, */
 ];
 export default navbarNavigation;

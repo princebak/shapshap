@@ -1,18 +1,19 @@
 import { Fragment } from "react";
 import { Heading, StyledLink } from "../styles";
-import { CUSTOMER_CARE_LINKS } from "../data"; 
+import { CUSTOMER_CARE_LINKS } from "../data";
 // ==============================================================
 
-
 // ==============================================================
-export default function CustomerCareLinks({
-  isDark
-}) {
-  return <Fragment>
+export default function CustomerCareLinks({ isDark }) {
+  return (
+    <Fragment>
       <Heading>Customer Care</Heading>
 
-      {CUSTOMER_CARE_LINKS.map((item, ind) => <StyledLink isDark={isDark} href="/" key={ind}>
-          {item}
-        </StyledLink>)}
-    </Fragment>;
+      {CUSTOMER_CARE_LINKS.map((item, ind) => (
+        <StyledLink isDark={isDark} href={item.link} key={ind}>
+          {item.name}
+        </StyledLink>
+      ))}
+    </Fragment>
+  );
 }
