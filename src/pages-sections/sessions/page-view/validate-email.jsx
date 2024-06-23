@@ -15,35 +15,41 @@ import { H3 } from "components/Typography";
 import { FlexRowCenter } from "components/flex-box";
 import { useRouter } from "next/navigation";
 
-const ResetPassword = () => {
+const ValidateEmail = () => {
   const router = useRouter();
   // FORM FIELD INITIAL VALUE
   const initialValues = {
-    email: "",
+    code: "",
   };
   // FORM FIELD VALIDATION SCHEMA
 
   const validationSchema = yup.object().shape({
-    email: yup.string().email("invalid email").required("Email is required"),
+    code: yup.string().required("Code is required"),
   });
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues,
       validationSchema,
       onSubmit: (values) => {
-        console.log(values);
+        console.log("Submitting >> ", values);
       },
     });
 
   const submitForm = () => {
     console.log("submitForm");
-    router.push("/change-password");
+    router.push("/login");
   };
 
+  const handleResendValidationCode = (e) => {
+    e.preventDefault();
+    // 1. send use validation code
+    // 2. display the message to the user
+    console.log("validation code sent");
+  };
   return (
     <Fragment>
       <H3 mb={3} textAlign="center">
-        Reset your password
+        Validate your email
       </H3>
 
       {/* FORM AREA */}
@@ -56,28 +62,28 @@ const ResetPassword = () => {
       >
         <TextField
           fullWidth
-          name="email"
-          type="email"
-          label="Email"
+          name="code"
+          type="text"
+          label="Validation Code"
           onBlur={handleBlur}
-          value={values.email}
+          value={values.code}
           onChange={handleChange}
-          helperText={touched.email && errors.email}
-          error={Boolean(touched.email && errors.email)}
+          helperText={touched.code && errors.code}
+          error={Boolean(touched.code && errors.code)}
         />
 
         <Button fullWidth type="submit" color="primary" variant="contained">
-          Reset
+          Validate
         </Button>
       </Box>
 
       {/* BOTTOM LINK AREA */}
       <FlexRowCenter mt={3} justifyContent="center" gap={1}>
-        Don&apos;t have an account?
-        <BoxLink title="Register" href="/register" />
+        Any problem with the code?
+        <BoxLink title="Resend" href="#" onClick={handleResendValidationCode} />
       </FlexRowCenter>
     </Fragment>
   );
 };
 
-export default ResetPassword;
+export default ValidateEmail;

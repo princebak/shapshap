@@ -16,9 +16,10 @@ export const ABOUT_LINKS = [
     link: "/assets/pdfs/ecom-privacy-policy.pdf",
   },
 ];
+// TODO : update CUSTOMER_CARE_LINKS links when corresponding pages are available
 export const CUSTOMER_CARE_LINKS = [
-  { name: "FAQ", link: "/faq" },
-  { name: "Track Your Order", link: "/track_order" },
+  { name: "FAQ", link: "#" },
+  { name: "Track Your Order", link: "/#" },
 ];
 export const SOCIAL_ICON_LINKS = [
   {
