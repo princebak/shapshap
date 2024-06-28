@@ -12,7 +12,7 @@ import BoxLink from "../components/box-link";
 // GLOBAL CUSTOM COMPONENTS
 
 import { H3 } from "components/Typography";
-import { FlexRowCenter } from "components/flex-box";
+import { FlexBox, FlexRowCenter } from "components/flex-box";
 import { useRouter } from "next/navigation";
 
 const ValidateEmail = () => {

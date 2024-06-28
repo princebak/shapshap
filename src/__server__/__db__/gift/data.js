@@ -15,6 +15,7 @@ export const mainCarouselData = [{
   imgUrl: "/assets/images/Gift Shop/Header.png",
   title: "The gift of a man is his goodwill. Take care of gift"
 }]; 
+
 // category navigation list
 
 export const catgoryNavigation = [{

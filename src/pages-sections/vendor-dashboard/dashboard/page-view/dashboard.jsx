@@ -1,12 +1,10 @@
+
 import Grid from "@mui/material/Grid";
 // LOCAL CUSTOM COMPONENTS
 
 import Sales from "../sales";
 import Card1 from "../card-1";
-import Analytics from "../analytics";
 import WelcomeCard from "../welcome-card";
-import RecentPurchase from "../recent-purchase";
-import StockOutProducts from "../stock-out-products";
 // API FUNCTIONS
 
 import api from "utils/__api__/dashboard";
@@ -14,8 +12,7 @@ import api from "utils/__api__/dashboard";
 
 export default async function DashboardPageView({ userType }) {
   const cardList = await api.getAllCard();
-  const stockOutProducts = await api.stockOutProducts();
-  const recentPurchase = await api.recentPurchase();
+
   return (
     <div className="pt-2 py-2">
       <Grid container spacing={3}>

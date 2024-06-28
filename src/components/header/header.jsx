@@ -19,6 +19,7 @@ import LoginCartButtons from "./components/login-cart-buttons";
 // STYLED COMPONENTS
 
 import { HeaderWrapper, StyledContainer } from "./styles";
+import AccountPopover from "components/layouts/vendor-dashboard/dashboard-navbar/account-popover";
 // ==============================================================
 
 // ==============================================================
@@ -45,6 +46,7 @@ export default function Header({ isFixed, className, midSlot }) {
       {midSlot}
 
       {/* LOGIN AND CART BUTTON */}
+      <AccountPopover />
       <LoginCartButtons
         toggleDialog={toggleDialog}
         toggleSidenav={toggleSidenav}

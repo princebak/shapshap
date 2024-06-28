@@ -1,40 +1,26 @@
 import { Open_Sans } from "next/font/google";
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { GoogleAnalytics } from "@next/third-parties/google";
 export const openSans = Open_Sans({
-  subsets: ["latin"]
-}); 
-// THEME PROVIDER
-
-import ThemeProvider from "theme/theme-provider"; 
-// PRODUCT CART PROVIDER
-
-import CartProvider from "contexts/CartContext"; 
-// SITE SETTINGS PROVIDER
-
-import SettingsProvider from "contexts/SettingContext"; 
-// GLOBAL CUSTOM COMPONENTS
+  subsets: ["latin"],
+});
 
 import RTL from "components/rtl";
-import ProgressBar from "components/progress"; 
+import ProgressBar from "components/progress";
 // IMPORT i18n SUPPORT FILE
 
 import "i18n";
+import Providers from "components/Providers";
 
-export default function RootLayout({
-  children
-}) {
-  
-  return <html lang="en" suppressHydrationWarning>
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
       <body className={openSans.className}>
-        <CartProvider>
-          <SettingsProvider>
-            <ThemeProvider>
-              <ProgressBar />
-              <RTL>{children}</RTL>
-            </ThemeProvider>
-          </SettingsProvider>
-        </CartProvider>
+        <Providers>
+          <ProgressBar />
+          <RTL>{children}</RTL>
+        </Providers>
         <GoogleAnalytics gaId="G-XKPD36JXY0" />
       </body>
-    </html>;
+    </html>
+  );
 }

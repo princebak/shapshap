@@ -1,7 +1,7 @@
 import { ResetPasswordPageView } from "pages-sections/sessions/page-view";
 import ValidateEmail from "pages-sections/sessions/page-view/validate-email";
 export const metadata = {
-  title: "Reset Password - Bazaar Next.js E-commerce Template",
+  title: "Reset Password - ShapShap225",
   description: `Bazaar is a React Next.js E-commerce template. Build SEO friendly Online store, delivery app and Multi vendor store`,
   authors: [
     {

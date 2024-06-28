@@ -3,6 +3,8 @@
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { signIn } from "next-auth/react";
+
 // LOCAL CUSTOM COMPONENTS
 
 import EyeToggleButton from "../components/eye-toggle-button";
@@ -13,12 +15,18 @@ import usePasswordVisible from "../use-password-visible";
 
 import BazaarTextField from "components/BazaarTextField";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Loader from "components/Loader";
+import MessageAlert from "components/MessageAlert";
 // ==============================================================
 
 // ==============================================================
 const LoginPageView = ({ closeDialog }) => {
   const { visiblePassword, togglePasswordVisible } = usePasswordVisible();
+  const [message, setMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
   // LOGIN FORM FIELDS INITIAL VALUES
 
   const initialValues = {
@@ -37,16 +45,33 @@ const LoginPageView = ({ closeDialog }) => {
       validationSchema,
       onSubmit: (values) => {
         console.log(values);
-        closeDialog?.();
+        submitForm(values);
       },
     });
 
-  const submitForm = (e) => {
-    e.preventDefault();
-    router.push("/vendor/dashboard");
+  const submitForm = async (data) => {
+    setIsLoading(true);
+    const loginForm = {
+      email: data.email,
+      password: data.password,
+      redirect: false,
+    };
+    const res = await signIn("credentials", loginForm);
+
+    if (res.error) {
+      setMessage({ content: res.error, color: "red" });
+    } else {
+      setMessage({ content: "Logged in with success !", color: "green" });
+
+      router.push("/dashboard");
+    }
+    setIsLoading(false);
   };
+
   return (
-    <form onSubmit={submitForm}>
+    <form onSubmit={handleSubmit}>
+      <MessageAlert message={message} />
+
       <BazaarTextField
         mb={1.5}
         fullWidth
@@ -88,15 +113,19 @@ const LoginPageView = ({ closeDialog }) => {
         }}
       />
 
-      <Button
-        fullWidth
-        type="submit"
-        color="primary"
-        variant="contained"
-        size="large"
-      >
-        Login
-      </Button>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <Button
+          fullWidth
+          type="submit"
+          color="primary"
+          variant="contained"
+          size="large"
+        >
+          Login
+        </Button>
+      )}
     </form>
   );
 };

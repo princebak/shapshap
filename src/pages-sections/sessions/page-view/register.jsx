@@ -20,9 +20,17 @@ import BazaarTextField from "components/BazaarTextField";
 import { MenuItem } from "@mui/material";
 import { localLink, userType } from "utils/constants";
 import { useRouter } from "next/navigation";
+import { register } from "services/UserService";
+import MessageAlert from "components/MessageAlert";
+import { useState } from "react";
+import Loader from "components/Loader";
 
 const RegisterPageView = () => {
   const { visiblePassword, togglePasswordVisible } = usePasswordVisible();
+  const [message, setMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [agreementNotAccepted, setAgreementNotAccepted] = useState(false);
+
   const router = useRouter();
   // COMMON INPUT PROPS FOR TEXT FIELD
 
@@ -42,6 +50,7 @@ const RegisterPageView = () => {
     re_password: "",
     agreement: false,
   };
+
   // REGISTER FORM FIELD VALIDATION SCHEMA
 
   const validationSchema = yup.object().shape({
@@ -54,35 +63,46 @@ const RegisterPageView = () => {
       .string()
       .oneOf([yup.ref("password"), null], "Passwords must match")
       .required("Please re-type password"),
-    agreement: yup
-      .bool()
-      .test(
-        "agreement",
-        "You have to agree with our Terms and Conditions!",
-        (value) => value === true
-      )
-      .required("You have to agree with our Terms and Conditions!"),
   });
 
   // Handling submition method
-  const submitForm = () => {
+  const submitForm = async (values) => {
     /** TODO :
-     * 1. save the user
+     * 1. save the user DONE
      * 2. send the validation code to the user
      */
-    router.push("/validate-email");
+    if (!values.agreement) {
+      setAgreementNotAccepted(true);
+      setTimeout(() => {
+        setAgreementNotAccepted(false);
+      }, 3000);
+    } else {
+      setIsLoading(true);
+      const res = await register(values);
+
+      if (res.error) {
+        setMessage({ content: res.error, color: "red" });
+      } else {
+        setMessage({ content: "Registrated with success !", color: "green" });
+
+        router.push("/validate-email");
+      }
+      setIsLoading(false);
+    }
   };
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues,
       validationSchema,
       onSubmit: (values) => {
-        console.log(values);
+        console.log("User Registration >> ", values);
+        submitForm(values);
       },
     }); //TODO: try to use this formit method for submition
 
   return (
-    <form onSubmit={submitForm}>
+    <form onSubmit={handleSubmit}>
+      <MessageAlert message={message} />
       <BazaarTextField
         mb={1.5}
         fullWidth
@@ -221,19 +241,30 @@ const RegisterPageView = () => {
               href={localLink.TERMS_AND_CONDITIONS}
               target="_blank"
             />
+            {agreementNotAccepted && (
+              <MessageAlert
+                message={{
+                  content: "You have to agree with our Terms and Conditions!",
+                  color: "red",
+                }}
+              />
+            )}
           </FlexBox>
         }
       />
-
-      <Button
-        fullWidth
-        type="submit"
-        color="primary"
-        variant="contained"
-        size="large"
-      >
-        Create Account
-      </Button>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <Button
+          fullWidth
+          type="submit"
+          color="primary"
+          variant="contained"
+          size="large"
+        >
+          Create Account
+        </Button>
+      )}
     </form>
   );
 };
