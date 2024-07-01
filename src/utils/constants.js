@@ -22,10 +22,8 @@ export const emailMetadata = {
   SUBJECT_EMAIL_VALIDATION: "Email validation",
   SUBJECT_RESET_PW_VALIDATION: "Reset password validation",
   SENDER_NAME: "ShapShap",
-  EMAIL_VALIDATION_LINK: "http://localhost:3000/api/email-validation",
-  RESET_PW_VALIDATION_LINK: "http://localhost:3000/api/reset-pw-validation",
-  /* EMAIL_VALIDATION_LINK: "https://shapshap-two.vercel.app/api/email-validation",
-  RESET_PW_VALIDATION_LINK: "https://shapshap-two.vercel.app/api/reset-pw-validation", */
+  EMAIL_VALIDATION_LINK: "/api/email-validation",
+  RESET_PW_VALIDATION_LINK: "/api/reset-pw-validation",
 };
 
 export const userType = {
@@ -39,6 +37,8 @@ export const localLink = {
   PRIVACY_POLICY: "/assets/pdfs/ecom-privacy-policy.pdf",
   JWT_SECRET: "$2b$10$8KMPRzUEQ.7flfiT7FVf3.4AKnerb9BsblPqanw.M44nOReKoh6wu",
   APP_AUTH_SECRET: "*ShapShapApp@2023*",
+  // APP_BASE_PATH : "http://localhost:3000"
+  APP_BASE_PATH: "https://shapshap-two.vercel.app",
 };
 
 export const logMessage = {

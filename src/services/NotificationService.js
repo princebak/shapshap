@@ -1,6 +1,6 @@
 "use server";
 
-import { codePrefix, emailMetadata, remoteLink } from "utils/constants";
+import { codePrefix, emailMetadata, localLink, remoteLink } from "utils/constants";
 import * as sgMail from "@sendgrid/mail";
 import { Resend } from "resend";
 import axios from "axios";
@@ -70,7 +70,7 @@ export async function sendEmailWithEmailJs({
       to_email: receiver.email,
       from_name: emailMetadata.SENDER_NAME,
       subject: subject,
-      validationLink: `${validationLink}/${savedToken._id}`,
+      validationLink: `${localLink.APP_BASE_PATH}${validationLink}/${savedToken._id}`,
     },
   };
 
