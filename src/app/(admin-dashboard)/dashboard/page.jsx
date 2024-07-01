@@ -4,17 +4,20 @@ import Loading from "app/loading";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { DashboardPageView } from "pages-sections/vendor-dashboard/dashboard/page-view";
+import { useSelector } from "react-redux";
 import { userType } from "utils/constants";
 
-export default async function VendorDashboard() {
+export default function VendorDashboard() {
   const { data: session } = useSession();
   const router = useRouter();
-  const user = session?.user;
+  const { currentUser } = useSelector((state) => state.user);
+  console.log("CurrentUser >>", currentUser);
 
-  if (user && user.type === userType.BUYER) {
+  if (currentUser && currentUser.type === userType.BUYER) {
     router.replace("/profile");
+
     return <Loading />;
   } else {
-    return <DashboardPageView userType={session?.user?.type} />;
+    return <DashboardPageView userType={session?.currentUser?.type} />;
   }
 }

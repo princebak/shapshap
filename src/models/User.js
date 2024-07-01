@@ -1,61 +1,89 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
+import { userStatus } from "utils/constants";
 
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
     code: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
     name: {
       type: String,
       required: true,
       unique: true,
-      maxLength: 150
+      maxLength: 150,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      maxLength: 200
+      maxLength: 200,
     },
     phone: {
       type: String,
       required: true,
-      maxLength: 15
-    },
-    gender: {
-      type: String
-    },
-    dob: {
-      type: Date
+      maxLength: 15,
     },
     address: {
-      type: String
+      type: String,
+    },
+    country: {
+      type: String,
     },
     type: {
       type: String,
       required: true,
-      default: 'client'
+      default: "client",
+    },
+    shop: {
+      type: {
+        name: {
+          type: String,
+          required: true,
+          maxLength: 200,
+        },
+        phone: {
+          type: String,
+          required: true,
+          maxLength: 20,
+        },
+        description: {
+          type: String,
+          required: true,
+          maxLength: 250,
+        },
+        address: {
+          type: String,
+          required: true,
+          maxLength: 250,
+        },
+        profilPicUrl: {
+          type: String,
+          required: true,
+          maxLength: 250,
+        },
+      },
+      required: false,
     },
     password: {
       type: String,
       required: true,
       minLength: 5,
-      select: false
+      select: false,
     },
     profilPicUrl: { type: String },
     status: {
       type: String,
       required: true,
-      default: 'created'
-    }
+      default: userStatus.CREATED,
+    },
   },
   { timestamps: true }
-)
+);
 
-const User = mongoose.models.User || mongoose.model('User', userSchema)
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
-export default User
+export default User;

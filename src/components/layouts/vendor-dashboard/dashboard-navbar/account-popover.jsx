@@ -12,9 +12,12 @@ import IconButton from "@mui/material/IconButton";
 // GLOBAL CUSTOM COMPONENTS
 
 import { H6, Small } from "components/Typography";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import PersonOutline from "@mui/icons-material/PersonOutline";
 import { useRouter } from "next/navigation";
+import { userType } from "utils/constants";
+import { logout } from "redux/slices/userSlice";
+import { useSelector } from "react-redux";
 // STYLED COMPONENT
 
 const Divider = styled("div")(({ theme }) => ({
@@ -22,7 +25,7 @@ const Divider = styled("div")(({ theme }) => ({
   border: `1px dashed ${theme.palette.grey[200]}`,
 }));
 export default function AccountPopover() {
-  const { data: session } = useSession();
+  const { currentUser } = useSelector((state) => state.user);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -31,6 +34,11 @@ export default function AccountPopover() {
 
   const goto = (path) => {
     router.push(path);
+  };
+
+  const handleLogout = () => {
+    logout();
+    signOut();
   };
 
   return (
@@ -95,21 +103,28 @@ export default function AccountPopover() {
           },
         }}
       >
-        {session ? (
+        {currentUser ? (
           <>
             <Box px={2} pt={1}>
-              <H6>{session?.user?.name || "username"}</H6>
+              <H6>{currentUser?.name || "username"}</H6>
               <Small color="grey.500">
-                {session?.user?.type || "Account type"}
+                {currentUser?.type || "Account type"}
               </Small>
             </Box>
+            {currentUser?.type === userType.MERCHANT && (
+              <>
+                <Divider />
+                <MenuItem onClick={() => goto("/vendor/orders")}>
+                  My Orders
+                </MenuItem>
+                <MenuItem onClick={() => goto("/vendor/account-settings")}>
+                  Account Settings
+                </MenuItem>
+              </>
+            )}
 
             <Divider />
-            <MenuItem>Profile</MenuItem>
-            <MenuItem>My Orders</MenuItem>
-            <MenuItem>Settings</MenuItem>
-            <Divider />
-            <MenuItem onClick={() => signOut()}>Logout</MenuItem>
+            <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
           </>
         ) : (
           <>

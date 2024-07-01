@@ -20,9 +20,6 @@ export const generateUserCode = async (prefix) => {
 
 function generateCode(prefix) {
   let generatedCode = prefix;
-  let letters =
-    "ABCDEFGHIJKLMNPQRSTUVWXYZABCDEFGHIJKLMNPQRSTUVWXYZABCDEFGHIJKLMNPQRSTUVWXYZ";
-  let numbers = "012345678901234567890123456789";
 
   for (let i = 0; i < 5; i++) {
     let randomIndex = Math.floor(Math.random() * numbers.length);

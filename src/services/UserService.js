@@ -2,9 +2,10 @@
 
 import bcrypt from "bcrypt";
 import User from "models/User";
-import { generateUserCode } from "utils/codeGenerator";
+import { generateUserToken, generateUserCode } from "utils/codeGenerator";
 import { dbConnector } from "utils/dbConnector";
-import { userType } from "utils/constants";
+import { codePrefix, userType } from "utils/constants";
+import ActiveToken from "models/AccessToken";
 
 const validateEmail = (email) => {
   const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -20,7 +21,11 @@ const validatePassword = (password) => {
   return password.length >= 5;
 };
 
-const validateForm = async (fullName, email, password) => {
+const validatePhone = (phone) => {
+  return phone.length <= 20;
+};
+
+const validateForm = async (fullName, email, phone, password) => {
   if (!validateFullName(fullName)) {
     return { error: "Invalid name, too long." };
   }
@@ -32,6 +37,12 @@ const validateForm = async (fullName, email, password) => {
   if (!validatePassword(password)) {
     return {
       error: "The passwor is invalid",
+    };
+  }
+
+  if (!validatePhone(phone)) {
+    return {
+      error: "The phone is invalid",
     };
   }
 
@@ -48,18 +59,18 @@ const validateForm = async (fullName, email, password) => {
 };
 
 export async function register(data) {
-  console.log("DATA >> ", data);
   const { name, email, phone, password } = data;
 
-  const validateFormRes = await validateForm(name, email, password);
+  const validateFormRes = await validateForm(name, email, phone, password);
   if (validateFormRes) {
     return validateFormRes;
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  const codePrefix = data.type === userType.MERCHANT ? "MCT" : "BYR";
-  const generatedCode = await generateUserCode(codePrefix);
+  const prefix =
+    data.type === userType.MERCHANT ? codePrefix.MERCHANT : codePrefix.BUYER;
+  const generatedCode = await generateUserCode(prefix);
 
   const goodData = {
     ...data,
@@ -67,12 +78,19 @@ export async function register(data) {
     password: hashedPassword,
   };
 
-  console.log("goodData >> ", goodData);
-
   const newUser = new User(goodData);
 
   try {
     const savedUser = await newUser.save();
+    const generatedToken = await generateUserToken(codePrefix.EMAIL_VALIDATION);
+
+    const newToken = new ActiveToken({
+      owner: savedUser,
+      token: generatedToken,
+      activeDate: "",
+    });
+    const userToken = await newToken.save();
+    console.log("Registration >>", { savedUser, userToken });
     return { ...savedUser._doc, msg: "Enregistrement reusie." };
   } catch (error) {
     console.log("Error >> ", error);

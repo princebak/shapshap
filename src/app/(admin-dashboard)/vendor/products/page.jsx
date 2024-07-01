@@ -15,5 +15,6 @@ export const metadata = {
 };
 export default async function Products() {
   const products = await api.products();
+  
   return <ProductsPageView products={products} />;
 }

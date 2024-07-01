@@ -24,6 +24,7 @@ import { register } from "services/UserService";
 import MessageAlert from "components/MessageAlert";
 import { useState } from "react";
 import Loader from "components/Loader";
+import { sendEmailWithEmailJs } from "services/NotificationService";
 
 const RegisterPageView = () => {
   const { visiblePassword, togglePasswordVisible } = usePasswordVisible();
@@ -64,6 +65,12 @@ const RegisterPageView = () => {
       .oneOf([yup.ref("password"), null], "Passwords must match")
       .required("Please re-type password"),
   });
+  // Handling Email validation
+  const sendValidationEmail = async (data) => {
+    const res = await sendEmailWithEmailJs(data);
+    console.log("Validation email response >> ", res);
+    return res;
+  };
 
   // Handling submition method
   const submitForm = async (values) => {
@@ -78,6 +85,7 @@ const RegisterPageView = () => {
       }, 3000);
     } else {
       setIsLoading(true);
+    
       const res = await register(values);
 
       if (res.error) {

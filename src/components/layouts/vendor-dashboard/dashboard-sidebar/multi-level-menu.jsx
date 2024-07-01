@@ -24,6 +24,7 @@ import {
   ListIconWrapper,
 } from "./styles";
 import { signOut } from "next-auth/react";
+import { logout } from "redux/slices/userSlice";
 
 export default function MultiLevelMenu({ userType }) {
   const router = useRouter();
@@ -34,9 +35,13 @@ export default function MultiLevelMenu({ userType }) {
   const activeRoute = (path) => (pathname === path ? 1 : 0);
   // HANDLE NAVIGATE TO ANOTHER ROUTE & CLOSE SIDEBAR DRAWER IN MOBILE DEVICE
 
+  const handleLogout = () => {
+    logout();
+    signOut();
+  };
   const handleNavigation = (path) => {
     if (path === "/logout") {
-      signOut();
+      handleLogout();
     } else {
       router.push(path);
     }

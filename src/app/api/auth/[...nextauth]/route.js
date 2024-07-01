@@ -4,6 +4,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import User from "models/User";
 import { dbConnector } from "utils/dbConnector";
+import {
+  emailMetadata,
+  localLink,
+  logMessage,
+  userStatus,
+} from "utils/constants";
+import { sendEmailWithEmailJs } from "services/NotificationService";
 
 const handler = NextAuth({
   providers: [
@@ -32,8 +39,20 @@ const handler = NextAuth({
 
         console.log("User >> ", user);
 
+        const { password, ...userWithoutPassword } = user._doc;
+
         if (!user) {
           throw new Error("Email is not registered");
+        }
+
+        if (user.status !== userStatus.ACTIVE) {
+          await sendEmailWithEmailJs({
+            receiver: user,
+            subject: emailMetadata.SUBJECT_EMAIL_VALIDATION,
+            validationLink: emailMetadata.EMAIL_VALIDATION_LINK,
+          });
+
+          throw new Error(logMessage.USER_NOT_ACTIVE);
         }
 
         const isPasswordCorrect = await compare(
@@ -44,8 +63,6 @@ const handler = NextAuth({
         if (!isPasswordCorrect) {
           throw new Error("Password is incorrect");
         }
-
-        const { password, ...userWithoutPassword } = user._doc;
 
         return userWithoutPassword;
       },
@@ -62,7 +79,6 @@ const handler = NextAuth({
       }
       user && (token.user = user);
 
-      // return token;
       return token;
     },
     session: async ({ session, token }) => {
@@ -73,9 +89,9 @@ const handler = NextAuth({
     },
   },
   jwt: {
-    secret: "$2b$10$8KMPRzUEQ.7flfiT7FVf3.4AKnerb9BsblPqanw.M44nOReKoh6wu",
+    secret: localLink.JWT_SECRET,
   },
-  secret: "*ShapShapApp@2023*", //Authentication secret
+  secret: localLink.APP_AUTH_SECRET,
 });
 
 export { handler as GET, handler as POST };

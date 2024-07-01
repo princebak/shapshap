@@ -95,26 +95,9 @@ export const getNavigation = (userType) => {
           name: "Create Product",
           path: "/vendor/products/create",
         },
-        {
-          name: "Product Reviews",
-          path: "/vendor/products/reviews",
-        },
       ],
     },
-    {
-      name: "Categories",
-      icon: duotone.Accounts,
-      children: [
-        {
-          name: "Category List",
-          path: "/vendor/categories",
-        },
-        {
-          name: "Create Category",
-          path: "/vendor/categories/create",
-        },
-      ],
-    },
+
     {
       name: "Orders",
       icon: duotone.Order,
@@ -166,16 +149,7 @@ export const getNavigation = (userType) => {
       icon: duotone.Review,
       path: "/vendor/reviews",
     },
-    {
-      name: "Shop Setting",
-      icon: duotone.SiteSetting,
-      path: "/vendor/shop-settings",
-    },
-    /*   {
-      name: "Support Tickets",
-      icon: duotone.ElementHub,
-      path: "/vendor/support-tickets",
-    }, */
+
     {
       name: "Account Settings",
       icon: duotone.AccountSetting,

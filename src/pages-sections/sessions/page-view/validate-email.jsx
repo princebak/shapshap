@@ -40,10 +40,9 @@ const ValidateEmail = () => {
     router.push("/login");
   };
 
-  const handleResendValidationCode = (e) => {
+  const handleResendValidationCode = async(e) => {
     e.preventDefault();
-    // 1. send use validation code
-    // 2. display the message to the user
+    await send
     console.log("validation code sent");
   };
   return (
@@ -60,21 +59,11 @@ const ValidateEmail = () => {
         flexDirection="column"
         gap={2}
       >
-        <TextField
-          fullWidth
-          name="code"
-          type="text"
-          label="Validation Code"
-          onBlur={handleBlur}
-          value={values.code}
-          onChange={handleChange}
-          helperText={touched.code && errors.code}
-          error={Boolean(touched.code && errors.code)}
-        />
-
-        <Button fullWidth type="submit" color="primary" variant="contained">
-          Validate
-        </Button>
+        <p>Click on the email validation link sent in your mail;</p>
+        <p>
+          or click the resend button below for a new link, then check your mail
+          box :
+        </p>
       </Box>
 
       {/* BOTTOM LINK AREA */}

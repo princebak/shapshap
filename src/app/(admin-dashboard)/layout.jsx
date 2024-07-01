@@ -2,22 +2,24 @@
 
 import Loading from "app/loading";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
-import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+
 import { userType } from "utils/constants";
 
 const Layout = ({ children }) => {
   const pathname = usePathname();
 
-  const { data: session } = useSession();
   const router = useRouter();
+  const { currentUser } = useSelector((state) => state.user);
 
-  if (
-    !session ||
-    (session.user.type === userType.MERCHANT &&
+  console.log("User in Context OK", currentUser);
+
+if (
+    (currentUser.type === userType.MERCHANT &&
       !pathname.startsWith("/vendor") &&
       pathname !== "/dashboard") ||
-    (session.user.type === userType.ADMIN &&
+    (currentUser.type === userType.ADMIN &&
       !pathname.startsWith("/admin") &&
       pathname !== "/dashboard")
   ) {
@@ -26,7 +28,7 @@ const Layout = ({ children }) => {
     return <Loading />;
   } else {
     return (
-      <VendorDashboardLayout userType={session?.user?.type}>
+      <VendorDashboardLayout userType={currentUser?.type}>
         {children}
       </VendorDashboardLayout>
     );

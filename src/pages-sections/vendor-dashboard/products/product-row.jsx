@@ -1,47 +1,47 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Avatar from "@mui/material/Avatar"; 
+import Avatar from "@mui/material/Avatar";
 // MUI ICON COMPONENTS
 
 import Edit from "@mui/icons-material/Edit";
 import Delete from "@mui/icons-material/Delete";
-import RemoveRedEye from "@mui/icons-material/RemoveRedEye"; 
+import RemoveRedEye from "@mui/icons-material/RemoveRedEye";
 // GLOBAL CUSTOM COMPONENTS
 
 import { FlexBox } from "components/flex-box";
 import BazaarSwitch from "components/BazaarSwitch";
-import { Paragraph, Small } from "components/Typography"; 
+import { Paragraph, Small } from "components/Typography";
 // CUSTOM UTILS LIBRARY FUNCTION
 
-import { currency } from "lib"; 
+import { currency } from "lib";
 // STYLED COMPONENTS
 
-import { StyledTableRow, CategoryWrapper, StyledTableCell, StyledIconButton } from "../styles"; 
+import {
+  StyledTableRow,
+  CategoryWrapper,
+  StyledTableCell,
+  StyledIconButton,
+} from "../styles";
+import Link from "next/link";
 // ========================================================================
 
-
 // ========================================================================
-export default function ProductRow({
-  product
-}) {
-  const {
-    category,
-    name,
-    price,
-    image,
-    brand,
-    id,
-    published,
-    slug
-  } = product || {};
+export default function ProductRow({ product }) {
+  const { category, name, price, image, brand, id, published, slug } =
+    product || {};
   const router = useRouter();
   const [productPublish, setProductPublish] = useState(published);
-  return <StyledTableRow tabIndex={-1} role="checkbox">
+  return (
+    <StyledTableRow tabIndex={-1} role="checkbox">
       <StyledTableCell align="left">
         <FlexBox alignItems="center" gap={1.5}>
-          <Avatar alt={name} src={image} sx={{
-          borderRadius: 2
-        }} />
+          <Avatar
+            alt={name}
+            src={image}
+            sx={{
+              borderRadius: 2,
+            }}
+          />
 
           <div>
             <Paragraph fontWeight={600}>{name}</Paragraph>
@@ -55,21 +55,30 @@ export default function ProductRow({
       </StyledTableCell>
 
       <StyledTableCell align="left">
-        <Avatar src={brand} sx={{
-        width: 55,
-        height: "auto",
-        borderRadius: 0
-      }} />
+        <Avatar
+          src={brand}
+          sx={{
+            width: 55,
+            height: "auto",
+            borderRadius: 0,
+          }}
+        />
       </StyledTableCell>
 
       <StyledTableCell align="left">{currency(price)}</StyledTableCell>
 
       <StyledTableCell align="left">
-        <BazaarSwitch color="info" checked={productPublish} onChange={() => setProductPublish(state => !state)} />
+        <BazaarSwitch
+          color="info"
+          checked={productPublish}
+          onChange={() => setProductPublish((state) => !state)}
+        />
       </StyledTableCell>
 
       <StyledTableCell align="center">
-        <StyledIconButton onClick={() => router.push(`/admin/products/${slug}`)}>
+        <StyledIconButton
+          onClick={() => router.push(`/vendor/products/${slug}`)}
+        >
           <Edit />
         </StyledIconButton>
 
@@ -81,5 +90,6 @@ export default function ProductRow({
           <Delete />
         </StyledIconButton>
       </StyledTableCell>
-    </StyledTableRow>;
+    </StyledTableRow>
+  );
 }

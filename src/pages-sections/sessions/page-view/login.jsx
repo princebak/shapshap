@@ -3,7 +3,7 @@
 import Button from "@mui/material/Button";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 // LOCAL CUSTOM COMPONENTS
 
@@ -18,6 +18,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Loader from "components/Loader";
 import MessageAlert from "components/MessageAlert";
+import { useDispatch, useSelector } from "react-redux";
+import { loginSuccess } from "redux/slices/userSlice";
+import { logMessage } from "utils/constants";
+import { sendEmailWithEmailJs } from "services/NotificationService";
 // ==============================================================
 
 // ==============================================================
@@ -26,6 +30,16 @@ const LoginPageView = ({ closeDialog }) => {
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const { data: session } = useSession();
+
+  if (
+    (!currentUser && session?.user) ||
+    (currentUser && currentUser.email !== session?.user.email)
+  ) {
+    dispatch(loginSuccess(session?.user));
+  }
 
   // LOGIN FORM FIELDS INITIAL VALUES
 
@@ -33,6 +47,7 @@ const LoginPageView = ({ closeDialog }) => {
     email: "",
     password: "",
   };
+
   // LOGIN FORM FIELD VALIDATION SCHEMA
 
   const validationSchema = yup.object().shape({
@@ -48,6 +63,11 @@ const LoginPageView = ({ closeDialog }) => {
         submitForm(values);
       },
     });
+  const sendValidationEmail = async (data) => {
+    const res = await sendEmailWithEmailJs(data);
+    console.log("Validation email response >> ", res);
+    return res;
+  };
 
   const submitForm = async (data) => {
     setIsLoading(true);
@@ -60,9 +80,11 @@ const LoginPageView = ({ closeDialog }) => {
 
     if (res.error) {
       setMessage({ content: res.error, color: "red" });
+      if (res.error === logMessage.USER_NOT_ACTIVE) {
+        router.replace("/validate-email");
+      }
     } else {
       setMessage({ content: "Logged in with success !", color: "green" });
-
       router.push("/dashboard");
     }
     setIsLoading(false);

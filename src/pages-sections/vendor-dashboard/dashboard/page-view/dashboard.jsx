@@ -1,4 +1,3 @@
-
 import Grid from "@mui/material/Grid";
 // LOCAL CUSTOM COMPONENTS
 
@@ -8,6 +7,9 @@ import WelcomeCard from "../welcome-card";
 // API FUNCTIONS
 
 import api from "utils/__api__/dashboard";
+import useUser from "hooks/useUser";
+import { useContext } from "react";
+import { UserContext } from "contexts/UserContext";
 // DATA TYPES
 
 export default async function DashboardPageView({ userType }) {

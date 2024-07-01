@@ -7,6 +7,7 @@ import NotificationsPopover from "./notification-popover";
 // STYLED COMPONENTS
 
 import { StyledInputBase } from "./styles";
+
 export default function RightContent() {
   return <FlexBox alignItems="center" gap={2}>
       <StyledInputBase placeholder="Search anything..." startAdornment={<Search sx={{
