@@ -7,46 +7,6 @@ import axios from "axios";
 import { generateUserToken } from "utils/codeGenerator";
 import AccessToken from "models/AccessToken";
 
-export async function sendEmail({ to, from, subject, text, html }) {
-  console.log("Sent email request >>", { to, from, subject, text, html });
-  sgMail.setApiKey(remoteLink.SENDGRID_API_KEY);
-  const msg = {
-    to: to,
-    from: from,
-    subject: subject,
-    text: text,
-    html: html,
-  };
-  try {
-    console.log("Sending >> ", msg);
-    const res = await sgMail.send(msg);
-    console.log("Sent mail response >>", res);
-    return { msg: "Mail sent with success !" };
-  } catch (error) {
-    console.log("Sent email error >>", error);
-    return { error: "Mail not sent, try again later, or contact us." };
-  }
-}
-
-export async function sendEmailWithResend({ to, from, subject, html }) {
-  const resend = new Resend(remoteLink.RESEND_API_KEY);
-
-  const msg = {
-    to: to,
-    from: from,
-    subject: subject,
-    html: html,
-  };
-  try {
-    console.log("Sending >> ", msg);
-    const res = await resend.emails.send(msg);
-    console.log("Sent mail response >>", res);
-    return { msg: "Mail sent with success !" };
-  } catch (error) {
-    console.log("Sent email error >>", error);
-    return { error: "Mail not sent, try again later, or contact us." };
-  }
-}
 
 export async function sendEmailWithEmailJs({
   receiver,

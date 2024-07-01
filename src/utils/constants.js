@@ -46,9 +46,6 @@ export const logMessage = {
 };
 
 export const remoteLink = {
-  SENDGRID_API_KEY:
-    "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",
-  RESEND_API_KEY: "re_93AtPpw4_6BKuqyhezvCyYgd8b5r4oUf5",
   EMAILJS_SERVICE_ID: "service_f3z6v9l",
   EMAILJS_TEMPLATE_ID: "template_0tdy18b",
   EMAILJS_USER_ID: "Yf_lK_yFNz6HCBta9",
