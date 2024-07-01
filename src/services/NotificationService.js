@@ -1,12 +1,14 @@
 "use server";
 
-import { codePrefix, emailMetadata, localLink, remoteLink } from "utils/constants";
-import * as sgMail from "@sendgrid/mail";
-import { Resend } from "resend";
+import { emailMetadata, localLink } from "utils/constants";
+
 import axios from "axios";
-import { generateUserToken } from "utils/codeGenerator";
 import AccessToken from "models/AccessToken";
 
+const EMAILJS_SERVICE_ID = "service_f3z6v9l";
+const EMAILJS_TEMPLATE_ID = "template_0tdy18b";
+const EMAILJS_USER_ID = "Yf_lK_yFNz6HCBta9";
+const EMAILJS_ACCESS_TOKEN = "EWTrSEIOZZMKC9S4Oj1IY";
 
 export async function sendEmailWithEmailJs({
   receiver,
@@ -21,10 +23,10 @@ export async function sendEmailWithEmailJs({
   const savedToken = await newToken.save();
 
   const msg = {
-    service_id: remoteLink.EMAILJS_SERVICE_ID,
-    template_id: remoteLink.EMAILJS_TEMPLATE_ID,
-    user_id: remoteLink.EMAILJS_USER_ID,
-    accessToken: remoteLink.EMAILJS_ACCESS_TOKEN,
+    service_id: EMAILJS_SERVICE_ID,
+    template_id: EMAILJS_TEMPLATE_ID,
+    user_id: EMAILJS_USER_ID,
+    accessToken: EMAILJS_ACCESS_TOKEN,
     template_params: {
       to_name: receiver.name,
       to_email: receiver.email,

@@ -6,7 +6,6 @@ import User from "models/User";
 import { dbConnector } from "utils/dbConnector";
 import {
   emailMetadata,
-  localLink,
   logMessage,
   userStatus,
 } from "utils/constants";
@@ -89,9 +88,9 @@ const handler = NextAuth({
     },
   },
   jwt: {
-    secret: localLink.JWT_SECRET,
+    secret: "$2b$10$8KMPRzUEQ.7flfiT7FVf3.4AKnerb9BsblPqanw.M44nOReKoh6wu",
   },
-  secret: localLink.APP_AUTH_SECRET,
+  secret: "*ShapShapApp@2023*",
 });
 
 export { handler as GET, handler as POST };

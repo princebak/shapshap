@@ -35,8 +35,6 @@ export const userType = {
 export const localLink = {
   TERMS_AND_CONDITIONS: "/assets/pdfs/ecom-terms-conditions.pdf",
   PRIVACY_POLICY: "/assets/pdfs/ecom-privacy-policy.pdf",
-  JWT_SECRET: "$2b$10$8KMPRzUEQ.7flfiT7FVf3.4AKnerb9BsblPqanw.M44nOReKoh6wu",
-  APP_AUTH_SECRET: "*ShapShapApp@2023*",
   // APP_BASE_PATH : "http://localhost:3000"
   APP_BASE_PATH: "https://shapshap-two.vercel.app",
 };
@@ -45,21 +43,9 @@ export const logMessage = {
   USER_NOT_ACTIVE: "User is not active",
 };
 
-export const remoteLink = {
-  EMAILJS_SERVICE_ID: "service_f3z6v9l",
-  EMAILJS_TEMPLATE_ID: "template_0tdy18b",
-  EMAILJS_USER_ID: "Yf_lK_yFNz6HCBta9",
-  EMAILJS_ACCESS_TOKEN: "EWTrSEIOZZMKC9S4Oj1IY",
-};
-
 export const codePrefix = {
   MERCHANT: "MCT",
   BUYER: "BYR",
   EMAIL_VALIDATION: "EMV",
   RESET_PASSWORD_VALIDATION: "RPV",
 };
-
-// export const MONGODB_URI = 'mongodb://localhost:27017/shapshap'
-
-export const MONGODB_URI =
-  "mongodb+srv://princebak:princebak@bakil-free-cluster.oejtkcq.mongodb.net/shapshap?retryWrites=true&w=majority";

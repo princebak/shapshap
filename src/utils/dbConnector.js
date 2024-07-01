@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { MONGODB_URI } from "./constants";
 
 let isConnected = false;
 
@@ -11,6 +10,11 @@ export const dbConnector = async () => {
 
     return;
   }
+
+  // const MONGODB_URI = 'mongodb://localhost:27017/shapshap'
+
+  const MONGODB_URI =
+    "mongodb+srv://princebak:princebak@bakil-free-cluster.oejtkcq.mongodb.net/shapshap?retryWrites=true&w=majority";
 
   try {
     await mongoose.connect(MONGODB_URI, {
