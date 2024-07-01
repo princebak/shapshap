@@ -5,6 +5,7 @@ const userSlice = createSlice({
   initialState: {
     currentUser: null,
     currentEvent: null,
+    justRegisteredUser: null,
   },
   reducers: {
     loginSuccess: (state, action) => {
@@ -16,6 +17,9 @@ const userSlice = createSlice({
     changeCurrentEvent: (state, action) => {
       state.currentEvent = action.payload;
     },
+    updateJustRegisteredUser: (state, action) => {
+      state.justRegisteredUser = action.payload;
+    },
   },
 });
 
@@ -23,5 +27,6 @@ export const {
   loginSuccess,
   logout,
   changeCurrentEvent,
+  updateJustRegisteredUser,
 } = userSlice.actions;
 export default userSlice.reducer;

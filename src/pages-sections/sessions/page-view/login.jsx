@@ -21,7 +21,6 @@ import MessageAlert from "components/MessageAlert";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "redux/slices/userSlice";
 import { logMessage } from "utils/constants";
-import { sendEmailWithEmailJs } from "services/NotificationService";
 // ==============================================================
 
 // ==============================================================
@@ -63,11 +62,6 @@ const LoginPageView = ({ closeDialog }) => {
         submitForm(values);
       },
     });
-  const sendValidationEmail = async (data) => {
-    const res = await sendEmailWithEmailJs(data);
-    console.log("Validation email response >> ", res);
-    return res;
-  };
 
   const submitForm = async (data) => {
     setIsLoading(true);

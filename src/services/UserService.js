@@ -2,10 +2,11 @@
 
 import bcrypt from "bcrypt";
 import User from "models/User";
-import { generateUserToken, generateUserCode } from "utils/codeGenerator";
+import { generateUserCode } from "utils/codeGenerator";
 import { dbConnector } from "utils/dbConnector";
-import { codePrefix, userType } from "utils/constants";
+import { codePrefix, emailMetadata, userType } from "utils/constants";
 import ActiveToken from "models/AccessToken";
+import { sendEmailWithEmailJs } from "./NotificationService";
 
 const validateEmail = (email) => {
   const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -82,18 +83,18 @@ export async function register(data) {
 
   try {
     const savedUser = await newUser.save();
-    const generatedToken = await generateUserToken(codePrefix.EMAIL_VALIDATION);
 
-    const newToken = new ActiveToken({
-      owner: savedUser,
-      token: generatedToken,
-      activeDate: "",
+    await sendEmailWithEmailJs({
+      receiver: savedUser,
+      subject: emailMetadata.SUBJECT_EMAIL_VALIDATION,
+      validationLink: emailMetadata.EMAIL_VALIDATION_LINK,
     });
-    const userToken = await newToken.save();
-    console.log("Registration >>", { savedUser, userToken });
-    return { ...savedUser._doc, msg: "Enregistrement reusie." };
+
+    const { _id, name, email } = savedUser._doc;
+
+    return { _id, name, email };
   } catch (error) {
     console.log("Error >> ", error);
-    return error;
+    return { error: error };
   }
 }

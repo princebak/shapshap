@@ -24,13 +24,15 @@ import { register } from "services/UserService";
 import MessageAlert from "components/MessageAlert";
 import { useState } from "react";
 import Loader from "components/Loader";
-import { sendEmailWithEmailJs } from "services/NotificationService";
+import { useDispatch } from "react-redux";
+import { updateJustRegisteredUser } from "redux/slices/userSlice";
 
 const RegisterPageView = () => {
   const { visiblePassword, togglePasswordVisible } = usePasswordVisible();
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [agreementNotAccepted, setAgreementNotAccepted] = useState(false);
+  const dispatch = useDispatch();
 
   const router = useRouter();
   // COMMON INPUT PROPS FOR TEXT FIELD
@@ -65,19 +67,9 @@ const RegisterPageView = () => {
       .oneOf([yup.ref("password"), null], "Passwords must match")
       .required("Please re-type password"),
   });
-  // Handling Email validation
-  const sendValidationEmail = async (data) => {
-    const res = await sendEmailWithEmailJs(data);
-    console.log("Validation email response >> ", res);
-    return res;
-  };
 
   // Handling submition method
   const submitForm = async (values) => {
-    /** TODO :
-     * 1. save the user DONE
-     * 2. send the validation code to the user
-     */
     if (!values.agreement) {
       setAgreementNotAccepted(true);
       setTimeout(() => {
@@ -85,15 +77,20 @@ const RegisterPageView = () => {
       }, 3000);
     } else {
       setIsLoading(true);
-    
+
       const res = await register(values);
 
       if (res.error) {
         setMessage({ content: res.error, color: "red" });
       } else {
-        setMessage({ content: "Registrated with success !", color: "green" });
+        setMessage({ content: "Registered with success !", color: "green" });
 
-        router.push("/validate-email");
+        /*We save the registered user in local storage
+          to use it for the resend email request on the validate-email
+        */
+        dispatch(updateJustRegisteredUser(res)); // when success, the response is the registered user
+
+        router.replace("/validate-email");
       }
       setIsLoading(false);
     }

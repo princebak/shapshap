@@ -12,39 +12,24 @@ import BoxLink from "../components/box-link";
 // GLOBAL CUSTOM COMPONENTS
 
 import { H3 } from "components/Typography";
-import { FlexBox, FlexRowCenter } from "components/flex-box";
-import { useRouter } from "next/navigation";
+import { FlexRowCenter } from "components/flex-box";
+import { sendEmailWithEmailJs } from "services/NotificationService";
+import { emailMetadata } from "utils/constants";
+import { useSelector } from "react-redux";
 
 const ValidateEmail = () => {
-  const router = useRouter();
-  // FORM FIELD INITIAL VALUE
-  const initialValues = {
-    code: "",
-  };
-  // FORM FIELD VALIDATION SCHEMA
+  const { justRegisteredUser } = useSelector((state) => state.user);
 
-  const validationSchema = yup.object().shape({
-    code: yup.string().required("Code is required"),
-  });
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
-    useFormik({
-      initialValues,
-      validationSchema,
-      onSubmit: (values) => {
-        console.log("Submitting >> ", values);
-      },
-    });
-
-  const submitForm = () => {
-    console.log("submitForm");
-    router.push("/login");
-  };
-
-  const handleResendValidationCode = async(e) => {
+  const handleResendValidationCode = async (e) => {
     e.preventDefault();
-    await send
-    console.log("validation code sent");
+    await sendEmailWithEmailJs({
+      receiver: justRegisteredUser,
+      subject: emailMetadata.SUBJECT_EMAIL_VALIDATION,
+      validationLink: emailMetadata.EMAIL_VALIDATION_LINK,
+    });
+    console.log("validation code resent");
   };
+
   return (
     <Fragment>
       <H3 mb={3} textAlign="center">
@@ -53,7 +38,7 @@ const ValidateEmail = () => {
 
       {/* FORM AREA */}
       <Box
-        onSubmit={submitForm}
+        onSubmit={() => {}}
         component="form"
         display="flex"
         flexDirection="column"
@@ -61,8 +46,8 @@ const ValidateEmail = () => {
       >
         <p>Click on the email validation link sent in your mail;</p>
         <p>
-          or click the resend button below for a new link, then check your mail
-          box :
+          Link not received ?, click the resend button below for a new link,
+          then check your mail box :
         </p>
       </Box>
 
