@@ -33,13 +33,10 @@ const LoginPageView = ({ closeDialog }) => {
   const dispatch = useDispatch();
   const { data: session } = useSession();
   const actived = useSearchParams().get("actived"); // This is the validation token
-  console.log("Login session >>", session);
   if (
     (!currentUser && session?.user) ||
     (currentUser && currentUser.email !== session?.user.email)
   ) {
-    console.log("Setting user in redux");
-
     dispatch(loginSuccess(session?.user));
   }
 
@@ -83,7 +80,6 @@ const LoginPageView = ({ closeDialog }) => {
     } else {
       setMessage({ content: "Logged in with success !", color: "green" });
       router.push("/dashboard");
-      console.log("auth dashboard push done");
     }
     setIsLoading(false);
   };
