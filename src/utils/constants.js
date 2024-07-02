@@ -22,10 +22,11 @@ export const emailMetadata = {
   SUBJECT_EMAIL_VALIDATION: "Email validation",
   SUBJECT_RESET_PW_VALIDATION: "Reset password validation",
   SENDER_NAME: "ShapShap",
-  EMAIL_VALIDATION_LINK: "/login",
-  RESET_PW_VALIDATION_LINK: "/reset-password",
-  /*   EMAIL_VALIDATION_LINK: "/api/email-validation",
-  RESET_PW_VALIDATION_LINK: "/api/reset-pw-validation", */
+  EMAIL_VALIDATION_LINK: "/api/email-validation",
+  RESET_PW_VALIDATION_LINK: "/api/reset-pw-validation",
+/*   EMAIL_VALIDATION_LINK: "/login",
+  RESET_PW_VALIDATION_LINK: "/reset-password", */
+  
 };
 
 export const userType = {
