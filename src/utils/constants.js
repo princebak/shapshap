@@ -24,8 +24,6 @@ export const emailMetadata = {
   SENDER_NAME: "ShapShap",
   EMAIL_VALIDATION_LINK: "/api/email-validation",
   RESET_PW_VALIDATION_LINK: "/api/reset-pw-validation",
-/*   EMAIL_VALIDATION_LINK: "/login",
-  RESET_PW_VALIDATION_LINK: "/reset-password", */
   
 };
 

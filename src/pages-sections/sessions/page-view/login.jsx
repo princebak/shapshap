@@ -14,14 +14,13 @@ import usePasswordVisible from "../use-password-visible";
 // GLOBAL CUSTOM COMPONENTS
 
 import BazaarTextField from "components/BazaarTextField";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import Loader from "components/Loader";
 import MessageAlert from "components/MessageAlert";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "redux/slices/userSlice";
 import { logMessage } from "utils/constants";
-import axios from "axios";
 // ==============================================================
 
 // ==============================================================
@@ -33,9 +32,7 @@ const LoginPageView = ({ closeDialog }) => {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const { data: session } = useSession();
-  const nsapi = useSearchParams().get("nsapi"); // This is the validation token
-
-  const [isTokenUsed, setIsTokenUsed] = useState(false);
+  const actived = useSearchParams().get("actived"); // This is the validation token
 
   if (
     (!currentUser && session?.user) ||
@@ -88,35 +85,17 @@ const LoginPageView = ({ closeDialog }) => {
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    console.log("isTokenUsed >>", isTokenUsed);
-    let myToken = null;
-    if (isTokenUsed === false) {
-      myToken = nsapi;
-      setIsTokenUsed(true);
-    }
-    if (myToken) {
-      const sendEmailValidationRequestIfTokenExist = async (token) => {
-        const res = await axios.get(`/api/email-validation/${token}`);
-        const resData = res.data;
-
-        console.log("Email validation res >>", resData);
-        if (resData.tokenExpired) {
-          router.replace("/validate-email?tokenExpired=true");
-        } else if (resData.error) {
-          console.log("res.error) >>", res.error);
-          setMessage({ content: resData.message, color: "red" });
-        } else {
-          setMessage({ content: resData.message, color: "green" });
-        }
-      };
-      sendEmailValidationRequestIfTokenExist(myToken);
-    }
-  }, []);
-
   return (
     <form onSubmit={handleSubmit}>
       <MessageAlert message={message} />
+      {actived && (
+        <MessageAlert
+          message={{
+            content: "Email validation done with success, you can login now.",
+            color: "green",
+          }}
+        />
+      )}
 
       <BazaarTextField
         mb={1.5}

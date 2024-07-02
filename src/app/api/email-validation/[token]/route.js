@@ -27,11 +27,6 @@ export async function GET(req, { params: { token } }) {
       return NextResponse.redirect(
         `${localLink.APP_BASE_PATH}/login?badRequest=true`
       );
-      /*  return NextResponse.json({
-        message: "Bad request",
-        error: true,
-        tokenExpired: false,
-      }); */
     } else if (userAccessToken.status === userTokenStatus.UNUSED) {
       const activeUser = await User.findByIdAndUpdate(user._id, {
         status: userStatus.ACTIVE,
@@ -44,11 +39,6 @@ export async function GET(req, { params: { token } }) {
       return NextResponse.redirect(
         `${localLink.APP_BASE_PATH}/login?actived=true`
       );
-      /* return NextResponse.json({
-        message: "Email validation succeded !, login now.",
-        error: false,
-        tokenExpired: false,
-      }); */
     } else {
       await sendEmailWithEmailJs({
         receiver: user,
@@ -59,21 +49,11 @@ export async function GET(req, { params: { token } }) {
       return NextResponse.redirect(
         `${localLink.APP_BASE_PATH}/validate-email?tokenExpired=true`
       );
-
-      /*    return NextResponse.json({
-        message: "LinkExpired",
-        error: true,
-        tokenExpired: true,
-      }); */
     }
   } catch (error) {
     console.log("E error >> ", error);
     return NextResponse.redirect(
       `${localLink.APP_BASE_PATH}/validate-email?error=true`
     );
-   /*  return NextResponse.json({
-      message: "Bad request",
-      error: error,
-    }); */
   }
 }
