@@ -20,7 +20,7 @@ import Loader from "components/Loader";
 import MessageAlert from "components/MessageAlert";
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "redux/slices/userSlice";
-import { logMessage } from "utils/constants";
+import { localLink, logMessage } from "utils/constants";
 // ==============================================================
 
 // ==============================================================
@@ -38,8 +38,11 @@ const LoginPageView = ({ closeDialog }) => {
     (!currentUser && session?.user) ||
     (currentUser && currentUser.email !== session?.user.email)
   ) {
+    console.log("Setting user in redux");
+
     dispatch(loginSuccess(session?.user));
-    router.push("/dashboard");
+
+    router.push(`${localLink.APP_BASE_PATH}/dashboard`);
   }
 
   // LOGIN FORM FIELDS INITIAL VALUES
@@ -81,9 +84,8 @@ const LoginPageView = ({ closeDialog }) => {
       }
     } else {
       setMessage({ content: "Logged in with success !", color: "green" });
-      router.push("/dashboard");
+      router.push(`${localLink.APP_BASE_PATH}/dashboard`);
       console.log("auth dashboard push done");
-
     }
     setIsLoading(false);
   };
