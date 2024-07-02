@@ -33,7 +33,7 @@ const LoginPageView = ({ closeDialog }) => {
   const dispatch = useDispatch();
   const { data: session } = useSession();
   const actived = useSearchParams().get("actived"); // This is the validation token
-
+  console.log("Login session >>", session);
   if (
     (!currentUser && session?.user) ||
     (currentUser && currentUser.email !== session?.user.email)
@@ -72,7 +72,7 @@ const LoginPageView = ({ closeDialog }) => {
       redirect: false,
     };
     const res = await signIn("credentials", loginForm);
-
+    console.log("auth res >>", res);
     if (res.error) {
       setMessage({ content: res.error, color: "red" });
       if (res.error === logMessage.USER_NOT_ACTIVE) {
