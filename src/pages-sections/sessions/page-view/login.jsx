@@ -82,6 +82,8 @@ const LoginPageView = ({ closeDialog }) => {
     } else {
       setMessage({ content: "Logged in with success !", color: "green" });
       router.push("/dashboard");
+      console.log("auth dashboard push done");
+
     }
     setIsLoading(false);
   };
