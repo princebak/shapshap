@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
 
   console.log("User in Context OK", currentUser);
 
-if (
+if (!currentUser ||
     (currentUser.type === userType.MERCHANT &&
       !pathname.startsWith("/vendor") &&
       pathname !== "/dashboard") ||

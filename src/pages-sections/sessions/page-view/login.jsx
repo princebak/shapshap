@@ -41,8 +41,6 @@ const LoginPageView = ({ closeDialog }) => {
     console.log("Setting user in redux");
 
     dispatch(loginSuccess(session?.user));
-
-    router.push(`${localLink.APP_BASE_PATH}/dashboard`);
   }
 
   // LOGIN FORM FIELDS INITIAL VALUES
@@ -84,7 +82,7 @@ const LoginPageView = ({ closeDialog }) => {
       }
     } else {
       setMessage({ content: "Logged in with success !", color: "green" });
-      router.push(`${localLink.APP_BASE_PATH}/dashboard`);
+      router.push("/dashboard");
       console.log("auth dashboard push done");
     }
     setIsLoading(false);
