@@ -8,10 +8,10 @@ export function middleware(request: NextRequest) {
   if (protectedPaths.includes(currentPath)) {
     const session = request.cookies.get("next-auth.session-token"); // Replace with your authentication mechanism
 
-    if (!session) {
+ /*    if (!session) {
       console.log("Not logged in");
       return NextResponse.redirect(new URL("/login", request.url)); // Redirect to login page
-    }
+    } */
   }
 
   return NextResponse.next();
