@@ -64,6 +64,7 @@ const ResetPassword = () => {
           onChange={handleChange}
           helperText={touched.email && errors.email}
           error={Boolean(touched.email && errors.email)}
+          
         />
 
         <Button fullWidth type="submit" color="primary" variant="contained">
