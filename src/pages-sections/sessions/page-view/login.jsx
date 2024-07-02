@@ -39,6 +39,7 @@ const LoginPageView = ({ closeDialog }) => {
     (currentUser && currentUser.email !== session?.user.email)
   ) {
     dispatch(loginSuccess(session?.user));
+    router.push("/dashboard");
   }
 
   // LOGIN FORM FIELDS INITIAL VALUES
