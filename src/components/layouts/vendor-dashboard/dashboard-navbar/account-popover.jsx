@@ -112,14 +112,45 @@ export default function AccountPopover() {
                 {currentUser?.type || "Account type"}
               </Small>
             </Box>
+
+            {currentUser?.type === userType.ADMIN && (
+              <>
+                <Divider />
+                <MenuItem onClick={() => goto("/admin/sellers")}>
+                  Sellers
+                </MenuItem>
+                <MenuItem onClick={() => goto("/admin/drivers")}>
+                  Drivers
+                </MenuItem>
+              </>
+            )}
+
             {currentUser?.type === userType.MERCHANT && (
               <>
                 <Divider />
                 <MenuItem onClick={() => goto("/vendor/orders")}>
-                  My Orders
+                  Orders
+                </MenuItem>
+                <MenuItem onClick={() => goto("/vendor/products")}>
+                  Products
                 </MenuItem>
                 <MenuItem onClick={() => goto("/vendor/account-settings")}>
                   Account Settings
+                </MenuItem>
+              </>
+            )}
+
+            {currentUser?.type === userType.BUYER && (
+              <>
+                <Divider />
+                <MenuItem onClick={() => goto("/customer/orders")}>
+                  Orders
+                </MenuItem>
+                <MenuItem onClick={() => goto("/customer/wish-list")}>
+                  Wish list
+                </MenuItem>
+                <MenuItem onClick={() => goto("/customer/profile")}>
+                  Profile
                 </MenuItem>
               </>
             )}
