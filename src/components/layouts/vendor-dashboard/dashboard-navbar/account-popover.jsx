@@ -12,7 +12,7 @@ import IconButton from "@mui/material/IconButton";
 // GLOBAL CUSTOM COMPONENTS
 
 import { H6, Small } from "components/Typography";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import PersonOutline from "@mui/icons-material/PersonOutline";
 import { useRouter } from "next/navigation";
 import { userType } from "utils/constants";
@@ -25,7 +25,8 @@ const Divider = styled("div")(({ theme }) => ({
   border: `1px dashed ${theme.palette.grey[200]}`,
 }));
 export default function AccountPopover() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { data: session } = useSession();
+  const currentUser = session?.user;
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 

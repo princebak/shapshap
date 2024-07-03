@@ -53,18 +53,18 @@ const MENUS = [
     title: "DASHBOARD",
     list: [
       {
-        href: "/orders",
+        href: "/customer/orders",
         title: "Orders",
         Icon: ShoppingBagOutlined,
         count: 5,
       },
       {
-        href: "/wish-list",
+        href: "/customer/wish-list",
         title: "Wishlist",
         Icon: FavoriteBorder,
         count: 19,
       },
-    /*   { // TO DO : "Uncomment when needed"
+      /*   { // TO DO : "Uncomment when needed"
         href: "/support-tickets",
         title: "Support Tickets",
         Icon: CustomerService,
@@ -76,13 +76,13 @@ const MENUS = [
     title: "ACCOUNT SETTINGS",
     list: [
       {
-        href: "/profile",
+        href: "/customer/profile",
         title: "Profile Info",
         Icon: Person,
         count: 3,
       },
       {
-        href: "/address",
+        href: "/customer/address",
         title: "Addresses",
         Icon: Place,
         count: 16,

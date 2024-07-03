@@ -13,9 +13,8 @@ const Layout = ({ children }) => {
   const router = useRouter();
   const { currentUser } = useSelector((state) => state.user);
 
-  console.log("User in Context OK", currentUser);
-
-if (!currentUser ||
+  if (
+    !currentUser ||
     (currentUser.type === userType.MERCHANT &&
       !pathname.startsWith("/vendor") &&
       pathname !== "/dashboard") ||
@@ -24,6 +23,10 @@ if (!currentUser ||
       pathname !== "/dashboard")
   ) {
     router.replace("/login");
+
+    return <Loading />;
+  } else if (currentUser.type === userType.BUYER) {
+    router.replace("/customer/profile");
 
     return <Loading />;
   } else {
