@@ -15,6 +15,7 @@ export const userStatus = {
 
 export const userTokenStatus = {
   UNUSED: "unused",
+  PENDING: "pending",
   USED: "used",
 };
 
@@ -24,7 +25,6 @@ export const emailMetadata = {
   SENDER_NAME: "ShapShap",
   EMAIL_VALIDATION_LINK: "/api/email-validation",
   RESET_PW_VALIDATION_LINK: "/api/reset-pw-validation",
-  
 };
 
 export const userType = {

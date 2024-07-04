@@ -17,13 +17,19 @@ import usePasswordVisible from "../use-password-visible";
 import { FlexBox, FlexRowCenter } from "components/flex-box";
 import BazaarTextField from "components/BazaarTextField";
 
-import { useRouter } from "next/navigation";
-import { Fragment } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useState } from "react";
 import { H3 } from "components/Typography";
+import { changePassword } from "services/UserService";
+import Loading from "app/loading";
+import MessageAlert from "components/MessageAlert";
 
 const ChangePasswordPageView = () => {
   const { visiblePassword, togglePasswordVisible } = usePasswordVisible();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const nsapi = useSearchParams().get("nsapi");
   // COMMON INPUT PROPS FOR TEXT FIELD
 
   const inputProps = {
@@ -34,16 +40,13 @@ const ChangePasswordPageView = () => {
   // REGISTER FORM FIELDS INITIAL VALUES
 
   const initialValues = {
-    email: "",
-    code: "",
+    code: nsapi,
     password: "",
     re_password: "",
   };
   // REGISTER FORM FIELD VALIDATION SCHEMA
 
   const validationSchema = yup.object().shape({
-    email: yup.string().email("invalid email").required("Email is required"),
-    code: yup.string().required("Reset code is required"),
     password: yup.string().required("Password is required"),
     re_password: yup
       .string()
@@ -52,18 +55,29 @@ const ChangePasswordPageView = () => {
   });
 
   // Handling submition method
-  const submitForm = () => {
-    /** TODO :
-     * 1. save the user with new password
-     */
-    router.push("/login");
+  const submitForm = async (values) => {
+    setIsLoading(true);
+    const res = await changePassword({
+      token: values.code,
+      newPassword: values.password,
+    });
+    if (res.error) {
+      setMessage({ content: res.error, color: "red" });
+      setIsLoading(false);
+    } else {
+      setMessage({
+        content: "Password changed with success !",
+        color: "green",
+      });
+      router.push("/login");
+    }
   };
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues,
       validationSchema,
       onSubmit: (values) => {
-        console.log(values);
+        submitForm(values);
       },
     }); //TODO: try to use this formit method for submition
 
@@ -72,44 +86,17 @@ const ChangePasswordPageView = () => {
       <H3 mb={3} textAlign="center">
         Change your password
       </H3>
-      <form onSubmit={submitForm}>
-        <BazaarTextField
-          mb={1.5}
-          fullWidth
-          name="email"
-          size="small"
-          type="email"
-          variant="outlined"
-          onBlur={handleBlur}
-          value={values.email}
-          onChange={handleChange}
-          label="Email"
-          placeholder="exmple@mail.com"
-          error={!!touched.email && !!errors.email}
-          helperText={touched.email && errors.email}
-        />
+      <MessageAlert message={message} />
 
-        <BazaarTextField
-          mb={1.5}
-          fullWidth
-          name="code"
-          size="small"
-          label="Reset code"
-          variant="outlined"
-          onBlur={handleBlur}
-          value={values.code}
-          onChange={handleChange}
-          placeholder=""
-          error={!!touched.code && !!errors.code}
-          helperText={touched.code && errors.code}
-        />
+      <form onSubmit={handleSubmit}>
+        <input name="code" type="hidden" value={values.code} />
 
         <BazaarTextField
           mb={1.5}
           fullWidth
           size="small"
           name="password"
-          label="Password"
+          label="New Password"
           variant="outlined"
           autoComplete="on"
           placeholder="*********"
@@ -128,7 +115,7 @@ const ChangePasswordPageView = () => {
           autoComplete="on"
           name="re_password"
           variant="outlined"
-          label="Retype Password"
+          label="Retype New Password"
           placeholder="*********"
           onBlur={handleBlur}
           onChange={handleChange}
@@ -140,15 +127,19 @@ const ChangePasswordPageView = () => {
           mb={2}
         />
 
-        <Button
-          fullWidth
-          type="submit"
-          color="primary"
-          variant="contained"
-          size="large"
-        >
-          Create Account
-        </Button>
+        {isLoading ? (
+          <Loading />
+        ) : (
+          <Button
+            fullWidth
+            type="submit"
+            color="primary"
+            variant="contained"
+            size="large"
+          >
+            Submit
+          </Button>
+        )}
       </form>
     </Fragment>
   );

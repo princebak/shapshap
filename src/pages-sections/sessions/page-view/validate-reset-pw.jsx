@@ -17,15 +17,15 @@ import { sendEmailWithEmailJs } from "services/NotificationService";
 import { emailMetadata } from "utils/constants";
 import { useSelector } from "react-redux";
 
-const ValidateEmail = () => {
+const ValidateResetPW = () => {
   const { justRegisteredUser } = useSelector((state) => state.user);
 
   const handleResendValidationCode = async (e) => {
     e.preventDefault();
     await sendEmailWithEmailJs({
       receiver: justRegisteredUser,
-      subject: emailMetadata.SUBJECT_EMAIL_VALIDATION,
-      validationLink: emailMetadata.EMAIL_VALIDATION_LINK,
+      subject: emailMetadata.SUBJECT_RESET_PW_VALIDATION,
+      validationLink: emailMetadata.RESET_PW_VALIDATION_LINK,
     });
     console.log("validation code resent");
   };
@@ -33,7 +33,7 @@ const ValidateEmail = () => {
   return (
     <Fragment>
       <H3 mb={3} textAlign="center">
-        Validate your email
+        Validate your reset password
       </H3>
 
       {/* FORM AREA */}
@@ -51,10 +51,12 @@ const ValidateEmail = () => {
             borderRadius: "5px",
           }}
         >
-          <p>Click on the email validation link sent in your mail;</p>
+          <p>
+            Click on the reset Password validation link sent in your mail box;
+          </p>
           <p>
             Link not received ?, click the resend button below for a new link,
-            then check your mail box :
+            then check your mail box again :
           </p>
         </div>
       </Box>
@@ -68,4 +70,4 @@ const ValidateEmail = () => {
   );
 };
 
-export default ValidateEmail;
+export default ValidateResetPW;

@@ -4,11 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import User from "models/User";
 import { dbConnector } from "utils/dbConnector";
-import {
-  emailMetadata,
-  logMessage,
-  userStatus,
-} from "utils/constants";
+import { emailMetadata, logMessage, userStatus } from "utils/constants";
 import { sendEmailWithEmailJs } from "services/NotificationService";
 
 const handler = NextAuth({
@@ -36,15 +32,13 @@ const handler = NextAuth({
           email: credentials.email,
         }).select("+password");
 
-        console.log("User >> ", user);
-
         const { password, ...userWithoutPassword } = user._doc;
 
         if (!user) {
           throw new Error("Email is not registered");
         }
 
-        if (user.status !== userStatus.ACTIVE) {
+        if (user.status === userStatus.CREATED) {
           await sendEmailWithEmailJs({
             receiver: user,
             subject: emailMetadata.SUBJECT_EMAIL_VALIDATION,

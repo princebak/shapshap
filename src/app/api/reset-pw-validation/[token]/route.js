@@ -1,13 +1,6 @@
 import AccessToken from "models/AccessToken";
-import User from "models/User";
 import { NextResponse } from "next/server";
-import { sendEmailWithEmailJs } from "services/NotificationService";
-import {
-  emailMetadata,
-  localLink,
-  userStatus,
-  userTokenStatus,
-} from "utils/constants";
+import { localLink, userTokenStatus } from "utils/constants";
 import { dbConnector } from "utils/dbConnector";
 
 export async function GET(req, { params: { token } }) {
@@ -15,25 +8,18 @@ export async function GET(req, { params: { token } }) {
     await dbConnector();
 
     const userAccessToken = await AccessToken.findById(token).populate("owner");
-    console.log("userAccessToken Api >> ", userAccessToken);
-
-    const user = userAccessToken.owner;
 
     // TODO add the token validity check
-    /*TODO and token type check to be sure that a Email Validation token 
+    /*TODO  token type check to be sure that a Email Validation token 
     is not used for reset password */
 
     if (userAccessToken && userAccessToken.status === userTokenStatus.UNUSED) {
-      const activeUser = await User.findByIdAndUpdate(user._id, {
-        status: userStatus.ACTIVE,
-      });
-      console.log("Actived User >> ", activeUser);
       await AccessToken.findByIdAndUpdate(userAccessToken._id, {
-        status: userTokenStatus.USED,
+        status: userTokenStatus.PENDING,
       });
 
       return NextResponse.redirect(
-        `${localLink.APP_BASE_PATH}/login?actived=true`
+        `${localLink.APP_BASE_PATH}/change-password?nsapi=${userAccessToken._id}`
       );
     } else {
       return NextResponse.redirect(
@@ -41,7 +27,7 @@ export async function GET(req, { params: { token } }) {
       );
     }
   } catch (error) {
-    console.log("E error >> ", error);
+    console.log("Error >> ", error);
     return NextResponse.redirect(
       `${localLink.APP_BASE_PATH}/validate-email?error=true`
     );

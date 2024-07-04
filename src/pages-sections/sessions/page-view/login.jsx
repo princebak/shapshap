@@ -72,16 +72,19 @@ const LoginPageView = ({ closeDialog }) => {
     };
     const res = await signIn("credentials", loginForm);
     console.log("auth res >>", res);
+
     if (res.error) {
       setMessage({ content: res.error, color: "red" });
+
       if (res.error === logMessage.USER_NOT_ACTIVE) {
         router.replace("/validate-email");
+      } else {
+        setIsLoading(false);
       }
     } else {
       setMessage({ content: "Logged in with success !", color: "green" });
       router.push("/dashboard");
     }
-    setIsLoading(false);
   };
 
   return (

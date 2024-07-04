@@ -4,9 +4,14 @@ import bcrypt from "bcrypt";
 import User from "models/User";
 import { generateUserCode } from "utils/codeGenerator";
 import { dbConnector } from "utils/dbConnector";
-import { codePrefix, emailMetadata, userType } from "utils/constants";
-import ActiveToken from "models/AccessToken";
+import {
+  codePrefix,
+  emailMetadata,
+  userTokenStatus,
+  userType,
+} from "utils/constants";
 import { sendEmailWithEmailJs } from "./NotificationService";
+import AccessToken from "models/AccessToken";
 
 const validateEmail = (email) => {
   const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -47,7 +52,6 @@ const validateForm = async (fullName, email, phone, password) => {
     };
   }
 
-  await dbConnector();
   const userByEmail = await User.findOne({ email: email });
 
   if (userByEmail) {
@@ -61,8 +65,10 @@ const validateForm = async (fullName, email, phone, password) => {
 
 export async function register(data) {
   const { name, email, phone, password } = data;
+  await dbConnector();
 
   const validateFormRes = await validateForm(name, email, phone, password);
+
   if (validateFormRes) {
     return validateFormRes;
   }
@@ -96,5 +102,53 @@ export async function register(data) {
   } catch (error) {
     console.log("Error >> ", error);
     return { error: error };
+  }
+}
+
+export async function changePassword({ token, newPassword }) {
+  try {
+    await dbConnector();
+
+    const userAccessToken = await AccessToken.findById(token).populate("owner");
+
+    const user = userAccessToken.owner;
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    if (userAccessToken && userAccessToken.status === userTokenStatus.PENDING) {
+      await AccessToken.findByIdAndUpdate(userAccessToken._id, {
+        status: userTokenStatus.USED,
+      });
+
+      await User.findByIdAndUpdate(user._id, { password: hashedPassword });
+
+      return { msg: "Password changed with success !" };
+    } else {
+      return { error: "Token invalid, the reset password process failed !" };
+    }
+  } catch (error) {
+    return { error: "Sever Error" };
+  }
+}
+
+export async function sendResetPwLink(email) {
+  try {
+    await dbConnector();
+
+    const user = await User.findOne({ email: email });
+
+    if (user) {
+      const res = await sendEmailWithEmailJs({
+        receiver: user,
+        subject: emailMetadata.SUBJECT_RESET_PW_VALIDATION,
+        validationLink: emailMetadata.RESET_PW_VALIDATION_LINK,
+      });
+
+      return { msg: "Reset password link sent with success !" };
+    } else {
+      return { error: "This email address is not registered !" };
+    }
+  } catch (error) {
+    return { error: "Server error !" };
   }
 }

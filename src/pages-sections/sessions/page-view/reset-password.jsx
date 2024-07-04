@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -14,9 +14,15 @@ import BoxLink from "../components/box-link";
 import { H3 } from "components/Typography";
 import { FlexRowCenter } from "components/flex-box";
 import { useRouter } from "next/navigation";
+import { sendResetPwLink } from "services/UserService";
+import MessageAlert from "components/MessageAlert";
+import Loader from "components/Loader";
 
 const ResetPassword = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+
   // FORM FIELD INITIAL VALUE
   const initialValues = {
     email: "",
@@ -35,9 +41,17 @@ const ResetPassword = () => {
       },
     });
 
-  const submitForm = () => {
-    console.log("submitForm");
-    router.push("/change-password");
+  const submitForm = async (e) => {
+    e.preventDefault();
+
+    setIsLoading(true);
+    const res = await sendResetPwLink(values.email);
+    if (res.error) {
+      setMessage({ content: res.error, color: "red" });
+      setIsLoading(false);
+    } else {
+      router.push("/validate-reset-pw");
+    }
   };
 
   return (
@@ -45,6 +59,8 @@ const ResetPassword = () => {
       <H3 mb={3} textAlign="center">
         Reset your password
       </H3>
+
+      <MessageAlert message={message} />
 
       {/* FORM AREA */}
       <Box
@@ -64,12 +80,14 @@ const ResetPassword = () => {
           onChange={handleChange}
           helperText={touched.email && errors.email}
           error={Boolean(touched.email && errors.email)}
-          
         />
-
-        <Button fullWidth type="submit" color="primary" variant="contained">
-          Reset
-        </Button>
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <Button fullWidth type="submit" color="primary" variant="contained">
+            Get reset link
+          </Button>
+        )}
       </Box>
 
       {/* BOTTOM LINK AREA */}
