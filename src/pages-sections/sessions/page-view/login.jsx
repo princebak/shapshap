@@ -71,7 +71,6 @@ const LoginPageView = ({ closeDialog }) => {
       redirect: false,
     };
     const res = await signIn("credentials", loginForm);
-    console.log("auth res >>", res);
 
     if (res.error) {
       setMessage({ content: res.error, color: "red" });

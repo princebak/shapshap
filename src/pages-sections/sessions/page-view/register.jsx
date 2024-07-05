@@ -58,7 +58,7 @@ const RegisterPageView = () => {
 
   const validationSchema = yup.object().shape({
     name: yup.string().required("Name is required"),
-    phone: yup.string().required("Phone number is required"),
+    phone: yup.number().required("Phone number is required"),
     type: yup.string().required("Account type is required"),
     email: yup.string().email("invalid email").required("Email is required"),
     password: yup.string().required("Password is required"),
@@ -140,6 +140,7 @@ const RegisterPageView = () => {
       />
 
       <BazaarTextField
+        type="number"
         mb={1.5}
         fullWidth
         name="phone"

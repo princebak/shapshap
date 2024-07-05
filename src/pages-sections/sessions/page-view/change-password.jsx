@@ -79,7 +79,7 @@ const ChangePasswordPageView = () => {
       onSubmit: (values) => {
         submitForm(values);
       },
-    }); //TODO: try to use this formit method for submition
+    }); 
 
   return (
     <Fragment>

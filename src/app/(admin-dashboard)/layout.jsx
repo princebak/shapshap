@@ -12,7 +12,6 @@ const Layout = ({ children }) => {
 
   const router = useRouter();
   const { currentUser } = useSelector((state) => state.user);
-  console.log("Dashboard currentUser >>", currentUser);
 
   if (
     !currentUser ||

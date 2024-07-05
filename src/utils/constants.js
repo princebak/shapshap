@@ -10,6 +10,7 @@ export const layoutConstant = {
 export const userStatus = {
   CREATED: "created",
   ACTIVE: "active",
+  VALIDATED: "validated",
   BLOCKED: "blocked",
 };
 

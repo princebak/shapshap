@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Formik } from "formik";
+import { Formik, useFormik } from "formik";
 import * as yup from "yup";
 // DATA
 
@@ -14,159 +14,275 @@ import countryList from "data/countryList";
 
 import CoverPicSection from "../cover-pic-section";
 import PageWrapper from "../../page-wrapper";
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import MessageAlert from "components/MessageAlert";
+import Loader from "components/Loader";
+import { updateUser } from "services/UserService";
+import { loginSuccess } from "redux/slices/userSlice";
 
-const ACCOUNT_SCHEMA = yup.object().shape({
-  name: yup.string().required("Name is required"),
-  address: yup.string().required("Address is required"),
-  country: yup.string().required("Country is required"),
-  profilPicUrl: yup.string().required("User profil picture is required"),
-  phone: yup.string().required("Phone is required"),
-  name: yup.string().required("Full name is required"),
-  email: yup.string().email("Invalid Email").required("Email is required"),
-  shop: {
-    name: yup.string().required("Shop's name is required"),
-    phone: yup.string().required("Shop's phone is required"),
-    description: yup.string().required("Shop's description is required"),
-    address: yup.string().required("Shop's address is required"),
-    profilPicUrl: yup.string().required("Shop's profil picture is required"),
-  },
-});
 export default function AccountSettingsPageView() {
-  const INITIAL_VALUES = {
-    _id: "",
-    name: "",
-    email: "",
-    phone: "",
-    address: "",
-    profilPicUrl: "",
-    country: null,
-    shop: {
-      name: "",
-      phone: "",
-      description: "",
-      address: "",
-      profilPicUrl: "",
-    },
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [userProfileImage, setUserProfileImage] = useState(null);
+  const [shopProfileImage, setShopProfileImage] = useState(null);
+
+  const initialValues = {
+    _id: currentUser._id,
+    name: currentUser.name,
+    email: currentUser.email,
+    phone: currentUser.phone,
+    address: currentUser.address,
+    profilPicUrl: currentUser.profilPicUrl,
+    country: currentUser.country,
+    shopName: currentUser.shop?.name,
+    shopPhone: currentUser.shop?.phone,
+    shopDescription: currentUser.shop?.description,
+    shopAddress: currentUser.shop?.address,
+    shopProfilPicUrl: currentUser.shop?.profilPicUrl,
   };
 
-  const handleFormSubmit = async (values) => {
-    console.log("Profile update request >> ", values);
+  // User Profile FORM FIELD VALIDATION SCHEMA
+
+  const validationSchema = yup.object().shape({
+    name: yup.string().required("Full Name is required"),
+    address: yup.string().required("Address is required"),
+    //  country: yup.string().required("Country is required"),
+    //  profilPicUrl: yup.string().required("User profil picture is required"),
+    phone: yup.number().required("Phone is required"),
+    email: yup.string().email("Invalid Email").required("Email is required"),
+    shopName: yup.string().required("Shop's name is required"),
+    shopPhone: yup.number().required("Shop's phone is required"),
+    shopDescription: yup.string().required("Shop's description is required"),
+    shopAddress: yup.string().required("Shop's address is required"),
+    shopProfilPicUrl: yup.string(),
+    // .required("Shop's profil picture is required"),
+  });
+
+  // Handling submition method
+  const submitForm = async (values) => {
+    console.log("submitting request ...");
+    setIsLoading(true);
+    const res = await updateUser({
+      ...values,
+      shop: {
+        name: values.shopName,
+        phone: values.shopPhone,
+        description: values.shopDescription,
+        address: values.shopAddress,
+        profilPicUrl: values.shopProfilPicUrl,
+      },
+    });
+
+    console.log("updateUser res >> ", res);
+    if (res.error) {
+      setMessage({ content: res.error, color: "red" });
+    } else {
+      setMessage({
+        content: "User updated with success !",
+        color: "green",
+      });
+      dispatch(loginSuccess(res));
+    }
+    setIsLoading(false);
+
+    console.log("updateUser DONE");
   };
+
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: (values) => {
+      submitForm(values);
+    },
+  });
 
   return (
     <PageWrapper title="Account Settings">
       <Card className="p-2">
         <CoverPicSection />
-        <Formik
-          onSubmit={handleFormSubmit}
-          initialValues={INITIAL_VALUES}
-          validationSchema={ACCOUNT_SCHEMA}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={3}>
-                <Grid item md={6} xs={12}>
+        <MessageAlert message={message} />
+
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            <input type="hidden" name="_id" value={values._id} />
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                color="info"
+                size="medium"
+                name="name"
+                label="Full Name"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.name}
+                error={!!touched.name && !!errors.name}
+                helperText={touched.name && errors.name}
+              />
+            </Grid>
+
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                color="info"
+                name="email"
+                type="email"
+                label="Email"
+                size="medium"
+                onBlur={handleBlur}
+                value={values.email}
+                onChange={handleChange}
+                error={!!touched.email && !!errors.email}
+                helperText={touched.email && errors.email}
+                disabled
+              />
+            </Grid>
+
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                type="tel"
+                color="info"
+                size="medium"
+                name="phone"
+                label="Phone"
+                onBlur={handleBlur}
+                value={values.phone}
+                onChange={handleChange}
+                error={!!touched.phone && !!errors.phone}
+                helperText={touched.phone && errors.phone}
+              />
+            </Grid>
+
+            {/*   <Grid item md={6} xs={12}>
+              <Autocomplete
+                fullWidth
+                disablePortal
+                options={countryList}
+                value={values.country}
+                getOptionLabel={(option) => option.label}
+                onChange={(_, value) => setFieldValue("country", value)}
+                renderInput={(params) => (
                   <TextField
-                    fullWidth
                     color="info"
+                    label="Country"
+                    variant="outlined"
+                    placeholder="Select Country"
+                    error={!!touched.country && !!errors.country}
+                    helperText={touched.country && errors.country}
+                    {...params}
                     size="medium"
-                    name="name"
-                    label="Full Name"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.name}
-                    error={!!touched.name && !!errors.name}
-                    helperText={touched.name && errors.name}
                   />
-                </Grid>
+                )}
+              />
+            </Grid> */}
 
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    fullWidth
-                    color="info"
-                    name="email"
-                    type="email"
-                    label="Email"
-                    size="medium"
-                    onBlur={handleBlur}
-                    value={values.email}
-                    onChange={handleChange}
-                    error={!!touched.email && !!errors.email}
-                    helperText={touched.email && errors.email}
-                  />
-                </Grid>
+            <Grid item md={12} xs={12}>
+              <TextField
+                multiline
+                rows={4}
+                fullWidth
+                name="address"
+                label="User address"
+                color="info"
+                size="medium"
+                onBlur={handleBlur}
+                value={values.address}
+                onChange={handleChange}
+                error={!!touched.address && !!errors.address}
+                helperText={touched.address && errors.address}
+              />
+            </Grid>
 
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    fullWidth
-                    type="tel"
-                    color="info"
-                    size="medium"
-                    name="contact"
-                    label="Phone"
-                    onBlur={handleBlur}
-                    value={values.contact}
-                    onChange={handleChange}
-                    error={!!touched.contact && !!errors.contact}
-                    helperText={touched.contact && errors.contact}
-                  />
-                </Grid>
+            <Grid item md={12} xs={12}>
+              <hr style={{ border: "solid 0.5px #eee" }} />
+            </Grid>
 
-                <Grid item md={6} xs={12}>
-                  <Autocomplete
-                    fullWidth
-                    disablePortal
-                    options={countryList}
-                    value={values.country}
-                    getOptionLabel={(option) => option.label}
-                    onChange={(_, value) => setFieldValue("country", value)}
-                    renderInput={(params) => (
-                      <TextField
-                        color="info"
-                        label="Country"
-                        variant="outlined"
-                        placeholder="Select Country"
-                        error={!!touched.country && !!errors.country}
-                        helperText={touched.country && errors.country}
-                        {...params}
-                        size="medium"
-                      />
-                    )}
-                  />
-                </Grid>
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                name="shopName"
+                label="Shop name"
+                color="info"
+                size="medium"
+                onBlur={handleBlur}
+                value={values.shopName}
+                onChange={handleChange}
+                error={!!touched.shopName && !!errors.shopName}
+                helperText={touched.shopName && errors.shopName}
+              />
+            </Grid>
 
-                <Grid item md={6} xs={12}>
-                  <TextField
-                    fullWidth
-                    name="city"
-                    label="City"
-                    color="info"
-                    size="medium"
-                    onBlur={handleBlur}
-                    value={values.city}
-                    onChange={handleChange}
-                    error={!!touched.city && !!errors.city}
-                    helperText={touched.city && errors.city}
-                  />
-                </Grid>
+            <Grid item md={6} xs={12}>
+              <TextField
+                fullWidth
+                name="shopPhone"
+                label="Shop phone"
+                color="info"
+                size="medium"
+                onBlur={handleBlur}
+                value={values.shopPhone}
+                onChange={handleChange}
+                error={!!touched.shopPhone && !!errors.shopPhone}
+                helperText={touched.shopPhone && errors.shopPhone}
+              />
+            </Grid>
 
-                <Grid item xs={12}>
-                  <Button type="submit" variant="contained" color="info">
-                    Save Changes
-                  </Button>
-                </Grid>
-              </Grid>
-            </form>
-          )}
-        </Formik>
+            <Grid item md={12} xs={12}>
+              <TextField
+                multiline
+                rows={4}
+                fullWidth
+                name="shopDescription"
+                label="Shop description"
+                color="info"
+                size="medium"
+                onBlur={handleBlur}
+                value={values.shopDescription}
+                onChange={handleChange}
+                error={!!touched.shopDescription && !!errors.shopDescription}
+                helperText={touched.shopDescription && errors.shopDescription}
+              />
+            </Grid>
+
+            <Grid item md={12} xs={12}>
+              <TextField
+                multiline
+                rows={4}
+                fullWidth
+                name="shopAddress"
+                label="Shop address"
+                color="info"
+                size="medium"
+                onBlur={handleBlur}
+                value={values.shopAddress}
+                onChange={handleChange}
+                error={!!touched.shopAddress && !!errors.shopAddress}
+                helperText={touched.shopAddress && errors.shopAddress}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              {isLoading ? (
+                <Loader />
+              ) : (
+                <Button type="submit" variant="contained" color="info">
+                  Save Changes
+                </Button>
+              )}
+            </Grid>
+          </Grid>
+        </form>
       </Card>
     </PageWrapper>
   );

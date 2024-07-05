@@ -7,14 +7,19 @@ import { dbConnector } from "utils/dbConnector";
 import {
   codePrefix,
   emailMetadata,
+  userStatus,
   userTokenStatus,
   userType,
 } from "utils/constants";
 import { sendEmailWithEmailJs } from "./NotificationService";
 import AccessToken from "models/AccessToken";
+import { dbObjectToJsObject } from "utils/utilFunctions";
 
 const validateEmail = (email) => {
   const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  if (email === "updateUser") {
+    return true;
+  }
 
   return regExp.test(email) && email.length <= 150;
 };
@@ -24,6 +29,9 @@ const validateFullName = (fullName) => {
 };
 
 const validatePassword = (password) => {
+  if (password === "updateUser") {
+    return true;
+  }
   return password.length >= 5;
 };
 
@@ -101,7 +109,39 @@ export async function register(data) {
     return { _id, name, email };
   } catch (error) {
     console.log("Error >> ", error);
-    return { error: error };
+    return { error: "Server error" };
+  }
+}
+
+export async function updateUser(data) {
+  const { name, phone, address, profilPicUrl } = data;
+
+  await dbConnector();
+
+  console.log("updateUser >> ", data);
+
+  const validateFormRes = await validateForm(
+    // TODO set a good way to validate for updateUser
+    name,
+    "updateUser",
+    phone,
+    "updateUser"
+  ); // TODO add shop fields
+
+  if (validateFormRes) {
+    return validateFormRes; // Text response if invalid
+  }
+
+  try {
+    const savedUser = await User.findByIdAndUpdate(data._id, {
+      ...data,
+      status: userStatus.VALIDATED, // TODO when the block user flow is done this has to be conditional (only if user is active)
+    });
+
+    return dbObjectToJsObject(savedUser._doc)
+  } catch (error) {
+    console.log("Error >> ", error);
+    return { error: "Server error" };
   }
 }
 
