@@ -1,12 +1,34 @@
+import Product from "models/Product";
 import User from "models/User";
+import { dbConnector } from "./dbConnector";
 
 export const generateUserCode = async (prefix) => {
+  await dbConnector();
   let generatedCode = "";
   try {
     while (generatedCode == "") {
       console.log("Prefix >> ", prefix);
       generatedCode = generateCode(prefix);
       let existingCode = await User.findOne({ code: generatedCode });
+      if (existingCode) {
+        generatedCode = "";
+      }
+    }
+  } catch (error) {
+    console.log("generateUserCode error >> " + error);
+  }
+
+  return generatedCode;
+};
+
+export const generateProductCode = async () => {
+  await dbConnector();
+
+  let generatedCode = "";
+  try {
+    while (generatedCode == "") {
+      generatedCode = generateCode("PRD");
+      let existingCode = await Product.findOne({ code: generatedCode });
       if (existingCode) {
         generatedCode = "";
       }

@@ -61,9 +61,9 @@ export default function ProductsPageView({ products }) {
   // RESHAPE THE PRODUCT LIST BASED TABLE HEAD CELL ID
 
   const filteredProducts = productList.map((item) => ({
-    id: item.id,
-    slug: item.slug,
-    name: item.title,
+    id: item._id,
+    code: item.code,
+    name: item.name,
     brand: item.brand,
     price: item.price,
     image: item.thumbnail,

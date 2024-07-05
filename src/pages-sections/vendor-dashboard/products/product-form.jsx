@@ -16,45 +16,63 @@ import { FlexBox } from "components/flex-box";
 // STYLED COMPONENTS
 
 import { UploadImageBox, StyledClear } from "../styles";
-import { useSession } from "next-auth/react";
 import MessageAlert from "components/MessageAlert";
 import Link from "next/link";
+import { logMessage, productCategories, userStatus } from "utils/constants";
+import { create } from "services/ProductService";
+import Loader from "components/Loader";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 // FORM FIELDS VALIDATION SCHEMA
 
 const VALIDATION_SCHEMA = yup.object().shape({
   name: yup.string().required("Name is required!"),
-  category: yup
-    .array(yup.string())
-    .min(1, "Category must have at least 1 items")
-    .required("Category is required!"),
+  categories: yup.array().required("At least one category is required!"),
   description: yup.string().required("Description is required!"),
   stock: yup.number().required("Stock is required!"),
   price: yup.number().required("Price is required!"),
-  sale_price: yup.number().optional(),
+  brand: yup.string().optional(),
+  size: yup.string().optional(),
+  discount: yup.number().optional(),
   tags: yup.string().required("Tags is required!"),
+  description: yup.string().required("Description is required!"),
 });
 // ================================================================
 
 // ================================================================
 export default function ProductForm(props) {
-  const { data: session } = useSession();
+  const { currentUser } = useSelector((state) => state.user);
+  const [message, setMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
   const INITIAL_VALUES = {
     _id: "",
-    code: "",
     name: "",
     brand: "",
     tags: "",
     stock: "",
     size: "",
     price: "",
-    category: [],
+    discount: "",
+    categories: [],
     images: [],
-    sale_price: "",
     description: "",
   };
 
-  const handleFormSubmit = (values) => {
-    console.log(values);
+  const handleFormSubmit = async (values) => {
+    setIsLoading(true);
+    const res = await create(values);
+    console.log("Product creation res >>", res);
+
+    if (res.error) {
+      setMessage({ content: res.error, color: "red" });
+      setIsLoading(false);
+    } else {
+      setMessage({ content: "Product created with success !", color: "green" });
+
+      router.push("/vendor/products");
+    }
   };
 
   const [files, setFiles] = useState([]);
@@ -76,7 +94,7 @@ export default function ProductForm(props) {
 
   return (
     <Card className="p-3">
-      {session?.user?.status === "created" ? (
+      {currentUser.status !== userStatus.VALIDATED ? (
         <div
           style={{
             display: "flex",
@@ -114,11 +132,13 @@ export default function ProductForm(props) {
           }) => (
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
+                <MessageAlert message={message} />
+
                 <Grid item sm={6} xs={12}>
                   <TextField
                     fullWidth
                     name="name"
-                    label="Name OK"
+                    label="Name"
                     color="info"
                     size="medium"
                     placeholder="Name"
@@ -136,20 +156,21 @@ export default function ProductForm(props) {
                     fullWidth
                     color="info"
                     size="medium"
-                    name="category"
+                    name="categories"
                     onBlur={handleBlur}
-                    placeholder="Category"
+                    placeholder="categories"
                     onChange={handleChange}
-                    value={values.category}
+                    value={values.categories}
                     label="Select Category"
                     SelectProps={{
                       multiple: true,
                     }}
-                    error={Boolean(touched.category && errors.category)}
-                    helperText={touched.category && errors.category}
+                    error={Boolean(touched.categories && errors.categories)}
+                    helperText={touched.categories && errors.categories}
                   >
-                    <MenuItem value="electronics">Electronics</MenuItem>
-                    <MenuItem value="fashion">Fashion</MenuItem>
+                    {productCategories.map((pro) => (
+                      <MenuItem key={pro} value={pro}>{pro}</MenuItem>
+                    ))}
                   </TextField>
                 </Grid>
 
@@ -195,6 +216,7 @@ export default function ProductForm(props) {
                     fullWidth
                     name="stock"
                     color="info"
+                    type="number"
                     size="medium"
                     label="Stock"
                     placeholder="Stock"
@@ -231,9 +253,9 @@ export default function ProductForm(props) {
                     type="number"
                     onBlur={handleBlur}
                     value={values.price}
-                    label="Regular Price"
+                    label="Price (USD)"
                     onChange={handleChange}
-                    placeholder="Regular Price"
+                    placeholder="Price"
                     helperText={touched.price && errors.price}
                     error={Boolean(touched.price && errors.price)}
                   />
@@ -242,24 +264,62 @@ export default function ProductForm(props) {
                 <Grid item sm={6} xs={12}>
                   <TextField
                     fullWidth
+                    name="brand"
                     color="info"
                     size="medium"
-                    type="number"
-                    name="sale_price"
-                    label="Sale Price"
+                    type="text"
                     onBlur={handleBlur}
+                    value={values.brand}
+                    label="Brand"
                     onChange={handleChange}
-                    placeholder="Sale Price"
-                    value={values.sale_price}
-                    helperText={touched.sale_price && errors.sale_price}
-                    error={Boolean(touched.sale_price && errors.sale_price)}
+                    placeholder="product brand"
+                    helperText={touched.brand && errors.brand}
+                    error={Boolean(touched.brand && errors.brand)}
                   />
                 </Grid>
 
                 <Grid item sm={6} xs={12}>
-                  <Button variant="contained" color="info" type="submit">
-                    Save product
-                  </Button>
+                  <TextField
+                    fullWidth
+                    name="size"
+                    color="info"
+                    size="medium"
+                    type="text"
+                    onBlur={handleBlur}
+                    value={values.size}
+                    label="Size"
+                    onChange={handleChange}
+                    placeholder="product size"
+                    helperText={touched.size && errors.size}
+                    error={Boolean(touched.size && errors.size)}
+                  />
+                </Grid>
+
+                <Grid item sm={6} xs={12}>
+                  <TextField
+                    fullWidth
+                    name="discount"
+                    color="info"
+                    size="medium"
+                    type="number"
+                    onBlur={handleBlur}
+                    value={values.discount}
+                    label="Discount %"
+                    onChange={handleChange}
+                    placeholder="Discount"
+                    helperText={touched.discount && errors.discount}
+                    error={Boolean(touched.discount && errors.discount)}
+                  />
+                </Grid>
+
+                <Grid item sm={6} xs={12}>
+                  {isLoading ? (
+                    <Loader />
+                  ) : (
+                    <Button variant="contained" color="info" type="submit">
+                      Save product
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </form>

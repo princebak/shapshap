@@ -20,6 +20,12 @@ export const userTokenStatus = {
   USED: "used",
 };
 
+export const productStatus = {
+  CREATED: "created",
+  PUBLISHED: "published",
+  UNPUBLISHED: "unpublished",
+};
+
 export const emailMetadata = {
   SUBJECT_EMAIL_VALIDATION: "Email validation",
   SUBJECT_RESET_PW_VALIDATION: "Reset password validation",
@@ -51,3 +57,17 @@ export const codePrefix = {
   EMAIL_VALIDATION: "EMV",
   RESET_PASSWORD_VALIDATION: "RPV",
 };
+
+export const productCategories = [
+  "Men",
+  "Women",
+  "Baby",
+  "Clothes",
+  "Furniture",
+  "Sport",
+  "Automobile",
+  "Accessories",
+  "Eelctronics",
+  "Hardware",
+  "Cosmetics",
+];

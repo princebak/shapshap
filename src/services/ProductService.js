@@ -1,6 +1,7 @@
 "use server";
 
 import Product from "models/Product";
+import { generateProductCode } from "utils/codeGenerator";
 import { dbObjectToJsObject } from "utils/utilFunctions";
 
 export async function findAll() {
@@ -11,7 +12,8 @@ export async function findAll() {
 
 export async function create(product) {
   try {
-    const newProduct = new Product(product);
+    const code = await generateProductCode();
+    const newProduct = new Product({ ...product, code: code, _id: null });
     const savedProduct = await newProduct.save();
 
     return dbObjectToJsObject(savedProduct._doc);

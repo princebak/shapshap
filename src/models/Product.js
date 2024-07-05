@@ -6,7 +6,7 @@ const productSchema = new Schema(
   {
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User",
     },
     code: {
       type: String,
@@ -32,13 +32,13 @@ const productSchema = new Schema(
       required: true,
     },
     size: {
-      type: Number,
+      type: String,
     },
     discount: {
       type: Number,
     },
     images: [],
-    category: [],
+    categories: [],
     tags: [],
     unit: { type: String },
     rating: {

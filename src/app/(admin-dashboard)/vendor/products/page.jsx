@@ -1,4 +1,5 @@
 import { ProductsPageView } from "pages-sections/vendor-dashboard/products/page-view";
+import { findAll } from "services/ProductService";
 // API FUNCTIONS
 
 import api from "utils/__api__/dashboard";
@@ -14,7 +15,7 @@ export const metadata = {
   keywords: ["e-commerce", "e-commerce template", "next.js", "react"],
 };
 export default async function Products() {
-  const products = await api.products();
-  
+  const products = await findAll(); // api.products();
+
   return <ProductsPageView products={products} />;
 }

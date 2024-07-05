@@ -105,7 +105,7 @@ export default function AccountPopover() {
         }}
       >
         {currentUser ? (
-          <>
+          <div>
             <Box px={2} pt={1}>
               <H6>{currentUser?.name || "username"}</H6>
               <Small color="grey.500">
@@ -116,10 +116,16 @@ export default function AccountPopover() {
             {currentUser?.type === userType.ADMIN && (
               <>
                 <Divider />
-                <MenuItem onClick={() => goto("/admin/sellers")}>
+                <MenuItem
+                  key={"/admin/sellers"}
+                  onClick={() => goto("/admin/sellers")}
+                >
                   Sellers
                 </MenuItem>
-                <MenuItem onClick={() => goto("/admin/drivers")}>
+                <MenuItem
+                  key={"/admin/drivers"}
+                  onClick={() => goto("/admin/drivers")}
+                >
                   Drivers
                 </MenuItem>
               </>
@@ -128,13 +134,22 @@ export default function AccountPopover() {
             {currentUser?.type === userType.MERCHANT && (
               <>
                 <Divider />
-                <MenuItem onClick={() => goto("/vendor/orders")}>
+                <MenuItem
+                  key={"/vendor/orders"}
+                  onClick={() => goto("/vendor/orders")}
+                >
                   Orders
                 </MenuItem>
-                <MenuItem onClick={() => goto("/vendor/products")}>
+                <MenuItem
+                  key={"/vendor/products"}
+                  onClick={() => goto("/vendor/products")}
+                >
                   Products
                 </MenuItem>
-                <MenuItem onClick={() => goto("/vendor/account-settings")}>
+                <MenuItem
+                  key={"/vendor/account-settings"}
+                  onClick={() => goto("/vendor/account-settings")}
+                >
                   Account Settings
                 </MenuItem>
               </>
@@ -157,12 +172,16 @@ export default function AccountPopover() {
 
             <Divider />
             <MenuItem onClick={() => handleLogout()}>Logout</MenuItem>
-          </>
+          </div>
         ) : (
-          <>
-            <MenuItem onClick={() => goto("/login")}>Login</MenuItem>
-            <MenuItem onClick={() => goto("/register")}>Sign up</MenuItem>
-          </>
+          <div>
+            <MenuItem key={"login"} onClick={() => goto("/login")}>
+              Login
+            </MenuItem>
+            <MenuItem key={"register"} onClick={() => goto("/register")}>
+              Sign up
+            </MenuItem>
+          </div>
         )}
       </Menu>
     </div>
