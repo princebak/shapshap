@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -18,6 +18,10 @@ import useMuiTable from "hooks/useMuiTable";
 import ProductRow from "../product-row";
 import SearchArea from "../../search-box";
 import PageWrapper from "../../page-wrapper";
+import { productStatus } from "utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { findAll, findAllByUserId } from "services/ProductService";
+import { loadProducts } from "redux/slices/productSlice";
 // CUSTOM DATA MODEL
 
 // TABLE HEADING DATA LIST
@@ -57,7 +61,22 @@ const tableHeading = [
 
 // =============================================================================
 export default function ProductsPageView({ products }) {
-  const [productList, setProductList] = useState([...products]);
+  const [productList, setProductList] = useState([]);
+  const distpatch = useDispatch();
+
+  const { currentUser } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (productList.length === 0) {
+      const loadProductList = async () => {
+        const products = await findAllByUserId(currentUser._id);
+        setProductList(products);
+        distpatch(loadProducts(products));
+      };
+      loadProductList();
+    }
+  }, []);
+
   // RESHAPE THE PRODUCT LIST BASED TABLE HEAD CELL ID
 
   const filteredProducts = productList.map((item) => ({
@@ -67,9 +86,10 @@ export default function ProductsPageView({ products }) {
     brand: item.brand,
     price: item.price,
     image: item.thumbnail,
-    published: item.published,
-    category: item.categories[0],
+    published: item.status === productStatus.PUBLISHED,
+    category: item.categories.join(", "),
   }));
+
   const {
     order,
     orderBy,
@@ -103,7 +123,7 @@ export default function ProductsPageView({ products }) {
                 hideSelectBtn
                 orderBy={orderBy}
                 heading={tableHeading}
-                rowCount={products.length}
+                rowCount={productList.length}
                 numSelected={selected.length}
                 onRequestSort={handleRequestSort}
               />
@@ -120,7 +140,7 @@ export default function ProductsPageView({ products }) {
         <Stack alignItems="center" my={4}>
           <TablePagination
             onChange={handleChangePage}
-            count={Math.ceil(products.length / rowsPerPage)}
+            count={Math.ceil(productList.length / rowsPerPage)}
           />
         </Stack>
       </Card>

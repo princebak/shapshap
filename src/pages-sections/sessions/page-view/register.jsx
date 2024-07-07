@@ -140,7 +140,7 @@ const RegisterPageView = () => {
       />
 
       <BazaarTextField
-        type="number"
+        type="tel"
         mb={1.5}
         fullWidth
         name="phone"

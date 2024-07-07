@@ -1,9 +1,17 @@
+"use client";
 
 // LOCAL CUSTOM COMPONENT
 import ProductForm from "../product-form";
 import PageWrapper from "../../page-wrapper";
+import { useSelector } from "react-redux";
+
 export default function EditProductPageView() {
-  return <PageWrapper title="Edit Product">
-      <ProductForm />
-    </PageWrapper>;
+  const { currentProduct } = useSelector((state) => state.product);
+  console.log("currentProduct ok >> ", currentProduct);
+
+  return (
+    <PageWrapper title="Edit Product">
+      <ProductForm product={currentProduct} />
+    </PageWrapper>
+  );
 }

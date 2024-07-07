@@ -19,10 +19,10 @@ import { UploadImageBox, StyledClear } from "../styles";
 import MessageAlert from "components/MessageAlert";
 import Link from "next/link";
 import { logMessage, productCategories, userStatus } from "utils/constants";
-import { create } from "services/ProductService";
+import { create, findProductByCode, update } from "services/ProductService";
 import Loader from "components/Loader";
-import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 // FORM FIELDS VALIDATION SCHEMA
 
 const VALIDATION_SCHEMA = yup.object().shape({
@@ -40,38 +40,45 @@ const VALIDATION_SCHEMA = yup.object().shape({
 // ================================================================
 
 // ================================================================
-export default function ProductForm(props) {
+export default function ProductForm({ product }) {
   const { currentUser } = useSelector((state) => state.user);
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
-  const INITIAL_VALUES = {
-    _id: "",
-    name: "",
-    brand: "",
-    tags: "",
-    stock: "",
-    size: "",
-    price: "",
-    discount: "",
-    categories: [],
-    images: [],
-    description: "",
-  };
+  const [initialValues, setInitialeValues] = useState(product);
 
   const handleFormSubmit = async (values) => {
+    values = { ...values, owner: currentUser._id };
     setIsLoading(true);
-    const res = await create(values);
-    console.log("Product creation res >>", res);
 
-    if (res.error) {
-      setMessage({ content: res.error, color: "red" });
-      setIsLoading(false);
+    if (values._id) {
+      const res = await update(values);
+
+      if (res.error) {
+        setMessage({ content: res.error, color: "red" });
+        setIsLoading(false);
+      } else {
+        setMessage({
+          content: "Product updated with success !",
+          color: "green",
+        });
+
+        router.push("/vendor/products");
+      }
     } else {
-      setMessage({ content: "Product created with success !", color: "green" });
+      const res = await create(values);
 
-      router.push("/vendor/products");
+      if (res.error) {
+        setMessage({ content: res.error, color: "red" });
+        setIsLoading(false);
+      } else {
+        setMessage({
+          content: "Product created with success !",
+          color: "green",
+        });
+
+        router.push("/vendor/products");
+      }
     }
   };
 
@@ -119,7 +126,7 @@ export default function ProductForm(props) {
       ) : (
         <Formik
           onSubmit={handleFormSubmit}
-          initialValues={INITIAL_VALUES}
+          initialValues={initialValues}
           validationSchema={VALIDATION_SCHEMA}
         >
           {({
@@ -169,7 +176,9 @@ export default function ProductForm(props) {
                     helperText={touched.categories && errors.categories}
                   >
                     {productCategories.map((pro) => (
-                      <MenuItem key={pro} value={pro}>{pro}</MenuItem>
+                      <MenuItem key={pro} value={pro}>
+                        {pro}
+                      </MenuItem>
                     ))}
                   </TextField>
                 </Grid>

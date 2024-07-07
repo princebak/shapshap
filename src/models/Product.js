@@ -16,8 +16,12 @@ const productSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
       maxLength: 150,
+    },
+    description: {
+      type: String,
+      required: true,
+      maxLength: 250,
     },
     brand: {
       type: String,
@@ -33,13 +37,17 @@ const productSchema = new Schema(
     },
     size: {
       type: String,
+      maxLength: 50,
     },
     discount: {
       type: Number,
     },
     images: [],
     categories: [],
-    tags: [],
+    tags: {
+      type: String,
+      maxLength: 150,
+    },
     unit: { type: String },
     rating: {
       type: Number,

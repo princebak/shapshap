@@ -23,30 +23,40 @@ import {
   StyledIconButton,
 } from "../styles";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { changeCurrentProduct } from "redux/slices/productSlice";
 // ========================================================================
 
 // ========================================================================
 export default function ProductRow({ product }) {
-  const { category, name, price, image, brand, id, published, slug } =
+  const { category, name, price, image, brand, id, published, code } =
     product || {};
   const router = useRouter();
   const [productPublish, setProductPublish] = useState(published);
+  const dispatch = useDispatch();
+
+  const handleEditProduct = (code) => {
+    dispatch(changeCurrentProduct(code));
+    router.push(`/vendor/products/${code}`);
+  };
+
   return (
     <StyledTableRow tabIndex={-1} role="checkbox">
       <StyledTableCell align="left">
         <FlexBox alignItems="center" gap={1.5}>
-          <Avatar
-            alt={name}
-            src={image}
-            sx={{
-              borderRadius: 2,
-            }}
-          />
-
-          <div>
-            <Paragraph fontWeight={600}>{name}</Paragraph>
-            <Small color="grey.600">#{id.split("-")[0]}</Small>
-          </div>
+          <Link href={`/vendor/products/${code}`}>
+            <Avatar
+              alt={name}
+              src={image}
+              sx={{
+                borderRadius: 2,
+              }}
+            />
+            <div>
+              <Paragraph fontWeight={600}>{name}</Paragraph>
+              <Small color="grey.600">#{code}</Small>
+            </div>
+          </Link>
         </FlexBox>
       </StyledTableCell>
 
@@ -76,9 +86,7 @@ export default function ProductRow({ product }) {
       </StyledTableCell>
 
       <StyledTableCell align="center">
-        <StyledIconButton
-          onClick={() => router.push(`/vendor/products/${slug}`)}
-        >
+        <StyledIconButton onClick={() => handleEditProduct(code)}>
           <Edit />
         </StyledIconButton>
 

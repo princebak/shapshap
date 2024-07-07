@@ -2,7 +2,6 @@ import { ProductsPageView } from "pages-sections/vendor-dashboard/products/page-
 import { findAll } from "services/ProductService";
 // API FUNCTIONS
 
-import api from "utils/__api__/dashboard";
 export const metadata = {
   title: "Products - ShapShap225",
   description: `Bazaar is a React Next.js E-commerce template. Build SEO friendly Online store, delivery app and Multi vendor store`,
@@ -17,5 +16,5 @@ export const metadata = {
 export default async function Products() {
   const products = await findAll(); // api.products();
 
-  return <ProductsPageView products={products} />;
+  return <ProductsPageView products={products}/>;
 }

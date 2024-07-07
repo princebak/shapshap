@@ -47,6 +47,11 @@ export const localLink = {
   APP_BASE_PATH: "https://shapshap-two.vercel.app",
 };
 
+export const remoteLink = {
+  COULDINARY_UPLOAD_LINK:
+    "https://api.cloudinary.com/v1_1/pribakil/image/upload",
+};
+
 export const logMessage = {
   USER_NOT_ACTIVE: "User is not active",
 };

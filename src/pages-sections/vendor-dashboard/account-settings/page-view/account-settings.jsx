@@ -15,33 +15,46 @@ import countryList from "data/countryList";
 import CoverPicSection from "../cover-pic-section";
 import PageWrapper from "../../page-wrapper";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MessageAlert from "components/MessageAlert";
 import Loader from "components/Loader";
 import { updateUser } from "services/UserService";
 import { loginSuccess } from "redux/slices/userSlice";
+import { remoteLink } from "utils/constants";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function AccountSettingsPageView() {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const { data: session, update } = useSession();
+  //const currentUser = session?.user;
   const { currentUser } = useSelector((state) => state.user);
+  const [updatedUser, setUpdatedUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [userProfileImage, setUserProfileImage] = useState(null);
   const [shopProfileImage, setShopProfileImage] = useState(null);
+  const [userProfileUrl, setUserProfileUrl] = useState(
+    currentUser?.profilPicUrl
+  );
+  const [shopProfileUrl, setShopProfileUrl] = useState(
+    currentUser?.shop.profilPicUrl
+  );
 
   const initialValues = {
-    _id: currentUser._id,
-    name: currentUser.name,
-    email: currentUser.email,
-    phone: currentUser.phone,
-    address: currentUser.address,
-    profilPicUrl: currentUser.profilPicUrl,
-    country: currentUser.country,
-    shopName: currentUser.shop?.name,
-    shopPhone: currentUser.shop?.phone,
-    shopDescription: currentUser.shop?.description,
-    shopAddress: currentUser.shop?.address,
-    shopProfilPicUrl: currentUser.shop?.profilPicUrl,
+    _id: currentUser?._id,
+    name: currentUser?.name,
+    email: currentUser?.email,
+    phone: currentUser?.phone,
+    address: currentUser?.address,
+    profilPicUrl: currentUser?.profilPicUrl,
+    country: currentUser?.country,
+    shopName: currentUser?.shop?.name,
+    shopPhone: currentUser?.shop?.phone,
+    shopDescription: currentUser?.shop?.description,
+    shopAddress: currentUser?.shop?.address,
+    shopProfilPicUrl: currentUser?.shop?.profilPicUrl,
   };
 
   // User Profile FORM FIELD VALIDATION SCHEMA
@@ -61,10 +74,38 @@ export default function AccountSettingsPageView() {
     // .required("Shop's profil picture is required"),
   });
 
+  const uploadImage = async (image) => {
+    const formData = new FormData();
+
+    formData.append("file", image);
+    formData.append("upload_preset", "shapshap");
+
+    console.log("upload image formData >> ", formData);
+
+    const uploadResponse = await fetch(remoteLink.COULDINARY_UPLOAD_LINK, {
+      method: "POST",
+      body: formData,
+    });
+
+    const uploadData = await uploadResponse.json();
+
+    return uploadData.secure_url;
+  };
+
   // Handling submition method
   const submitForm = async (values) => {
-    console.log("submitting request ...");
     setIsLoading(true);
+    if (userProfileImage) {
+      const userProfileImageUrl = await uploadImage(userProfileImage);
+
+      values = { ...values, profilPicUrl: userProfileImageUrl };
+    }
+    if (shopProfileImage) {
+      const shopProfileImageUrl = await uploadImage(shopProfileImage);
+
+      values = { ...values, shopProfilPicUrl: shopProfileImageUrl };
+    }
+
     const res = await updateUser({
       ...values,
       shop: {
@@ -76,7 +117,6 @@ export default function AccountSettingsPageView() {
       },
     });
 
-    console.log("updateUser res >> ", res);
     if (res.error) {
       setMessage({ content: res.error, color: "red" });
     } else {
@@ -84,7 +124,15 @@ export default function AccountSettingsPageView() {
         content: "User updated with success !",
         color: "green",
       });
-      dispatch(loginSuccess(res));
+
+      await update({
+        ...session,
+        user: {
+          ...res,
+        },
+      });
+
+      //dispatch(loginSuccess(updatedUser));
     }
     setIsLoading(false);
 
@@ -107,10 +155,43 @@ export default function AccountSettingsPageView() {
     },
   });
 
+  const handleUserProfileImageChange = (img) => {
+    const imageTargetElement = document.getElementById("userProfileImage");
+
+    if (img) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imageTargetElement.src = e.target.result;
+      };
+      reader.readAsDataURL(img);
+    }
+    setUserProfileImage(img);
+  };
+
+  const handleShopProfileImageChange = (img) => {
+    const imageTargetElement = document.getElementById("shopProfileImage");
+    if (img) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imageTargetElement.style.background = `url(${e.target.result}) center/cover`;
+      };
+      reader.readAsDataURL(img);
+    }
+    setShopProfileImage(img);
+  };
   return (
     <PageWrapper title="Account Settings">
       <Card className="p-2">
-        <CoverPicSection />
+        <CoverPicSection
+          userProfileUrl={userProfileUrl}
+          shopProfileUrl={shopProfileUrl}
+          handleUserProfileImageChange={(img) =>
+            handleUserProfileImageChange(img)
+          }
+          handleShopProfileImageChange={(img) =>
+            handleShopProfileImageChange(img)
+          }
+        />
         <MessageAlert message={message} />
 
         <form onSubmit={handleSubmit}>
