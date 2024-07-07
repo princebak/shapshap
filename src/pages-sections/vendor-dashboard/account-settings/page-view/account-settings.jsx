@@ -21,16 +21,13 @@ import Loader from "components/Loader";
 import { updateUser } from "services/UserService";
 import { loginSuccess } from "redux/slices/userSlice";
 import { remoteLink } from "utils/constants";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export default function AccountSettingsPageView() {
   const dispatch = useDispatch();
-  const router = useRouter();
   const { data: session, update } = useSession();
-  //const currentUser = session?.user;
-  const { currentUser } = useSelector((state) => state.user);
-  const [updatedUser, setUpdatedUser] = useState(null);
+  const { currentUser: userInStore } = useSelector((state) => state.user);
+  const [currentUser, setCurrentUser] = useState(userInStore);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [userProfileImage, setUserProfileImage] = useState(null);
@@ -124,7 +121,6 @@ export default function AccountSettingsPageView() {
         content: "User updated with success !",
         color: "green",
       });
-
       await update({
         ...session,
         user: {
@@ -132,12 +128,14 @@ export default function AccountSettingsPageView() {
         },
       });
 
-      //dispatch(loginSuccess(updatedUser));
+      setCurrentUser(res);
     }
     setIsLoading(false);
-
-    console.log("updateUser DONE");
   };
+
+  useEffect(() => {
+    dispatch(loginSuccess(currentUser));
+  }, [currentUser]);
 
   const {
     values,

@@ -2,8 +2,10 @@
 
 import Loading from "app/loading";
 import VendorDashboardLayout from "components/layouts/vendor-dashboard";
+import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { loginSuccess } from "redux/slices/userSlice";
 
 import { userType } from "utils/constants";
 
@@ -11,7 +13,15 @@ const Layout = ({ children }) => {
   const pathname = usePathname();
 
   const router = useRouter();
-  const { currentUser } = useSelector((state) => state.user);
+  let { currentUser } = useSelector((state) => state.user);
+
+  const { data: session } = useSession();
+  const dispatch = useDispatch();
+
+  if (session) {
+    dispatch(loginSuccess(session.user));
+    currentUser = session.user;
+  }
 
   if (
     !currentUser ||

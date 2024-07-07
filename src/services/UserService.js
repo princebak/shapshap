@@ -118,8 +118,6 @@ export async function updateUser(data) {
 
   await dbConnector();
 
-  console.log("updateUser >> ", data);
-
   const validateFormRes = await validateForm(
     // TODO set a good way to validate for updateUser
     name,
@@ -136,9 +134,11 @@ export async function updateUser(data) {
     const savedUser = await User.findByIdAndUpdate(data._id, {
       ...data,
       status: userStatus.VALIDATED, // TODO when the block user flow is done this has to be conditional (only if user is active)
-    });
+    }, {new: true});
 
-    return dbObjectToJsObject(savedUser._doc)
+    console.log("savedUser .. ", savedUser);
+
+    return dbObjectToJsObject(savedUser._doc);
   } catch (error) {
     console.log("Error >> ", error);
     return { error: "Server error" };
