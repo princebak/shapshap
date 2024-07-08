@@ -25,6 +25,9 @@ import {
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { changeCurrentProduct } from "redux/slices/productSlice";
+import { productStatus } from "utils/constants";
+import { updateProductStatusByCode } from "services/ProductService";
+import Loader from "components/Loader";
 // ========================================================================
 
 // ========================================================================
@@ -34,10 +37,29 @@ export default function ProductRow({ product }) {
   const router = useRouter();
   const [productPublish, setProductPublish] = useState(published);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEditProduct = (code) => {
     dispatch(changeCurrentProduct(code));
     router.push(`/vendor/products/${code}`);
+  };
+
+  const handlePublishProduct = async (code) => {
+    const publishState = !productPublish;
+    const newProductStatus =
+      publishState === true
+        ? productStatus.PUBLISHED
+        : productStatus.UNPUBLISHED;
+    setIsLoading(true);
+    const res = await updateProductStatusByCode(code, newProductStatus);
+
+    if (res.error) {
+      alert(`Error : Product not ${newProductStatus} !`);
+    } else {
+      alert(`Product ${newProductStatus} with success !`);
+      setProductPublish(publishState);
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -64,25 +86,20 @@ export default function ProductRow({ product }) {
         <CategoryWrapper>{category}</CategoryWrapper>
       </StyledTableCell>
 
-      <StyledTableCell align="left">
-        <Avatar
-          src={brand}
-          sx={{
-            width: 55,
-            height: "auto",
-            borderRadius: 0,
-          }}
-        />
-      </StyledTableCell>
+      <StyledTableCell align="left">{brand}</StyledTableCell>
 
       <StyledTableCell align="left">{currency(price)}</StyledTableCell>
 
       <StyledTableCell align="left">
-        <BazaarSwitch
-          color="info"
-          checked={productPublish}
-          onChange={() => setProductPublish((state) => !state)}
-        />
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <BazaarSwitch
+            color="info"
+            checked={productPublish}
+            onChange={() => handlePublishProduct(code)}
+          />
+        )}
       </StyledTableCell>
 
       <StyledTableCell align="center">

@@ -2,28 +2,63 @@
 
 import Product from "models/Product";
 import { generateProductCode } from "utils/codeGenerator";
+import { productStatus } from "utils/constants";
 import { dbConnector } from "utils/dbConnector";
 import { dbObjectToJsObject } from "utils/utilFunctions";
 
 export async function findAll() {
-  await dbConnector();
-  const products = await Product.find();
-  console.log("products", products);
-  return dbObjectToJsObject(products);
+  try {
+    await dbConnector();
+    const products = await Product.find();
+    return dbObjectToJsObject(products);
+  } catch (error) {
+    console.log("error >> ", error);
+    return { error: "Server error" };
+  }
+}
+
+export async function findAllPublished() {
+  try {
+    await dbConnector();
+    const products = await Product.find({status: productStatus.PUBLISHED});
+    return dbObjectToJsObject(products);
+  } catch (error) {
+    console.log("error >> ", error);
+    return { error: "Server error" };
+  }
 }
 
 export async function findAllByUserId(userId) {
-  await dbConnector();
-  console.log("userId >> ", userId);
-  const products = await Product.find({ owner: userId });
-  console.log("products", products);
-  return dbObjectToJsObject(products);
+  try {
+    await dbConnector();
+    const products = await Product.find({ owner: userId });
+    return dbObjectToJsObject(products);
+  } catch (error) {
+    console.log("findAllByUserId error >> ", error);
+    return { error: "Server error" };
+  }
 }
 
 export async function findProductByCode(code) {
-  await dbConnector();
-  const prod = await Product.findOne({ code: code });
-  return dbObjectToJsObject(prod);
+  try {
+    await dbConnector();
+    const prod = await Product.findOne({ code: code });
+    return dbObjectToJsObject(prod);
+  } catch (error) {
+    console.log("findProductByCode error >> ", error);
+    return { error: "Server error" };
+  }
+}
+
+export async function updateProductStatusByCode(code, newStatus) {
+  try {
+    await dbConnector();
+    await Product.findOneAndUpdate({ code: code }, { status: newStatus });
+    return { msg: "updateProductStatusByCode succeeded" };
+  } catch (error) {
+    console.log(" updateProductStateByCode error >> ", error);
+    return { error: "Server error" };
+  }
 }
 
 export async function create(product) {

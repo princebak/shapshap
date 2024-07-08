@@ -16,16 +16,30 @@ import useSales from "../use-sales";
 // PRODUCT DATA LIST
 
 import productDatabase from "data/product-database";
+import { useEffect, useState } from "react";
+import { findAllPublished } from "services/ProductService";
 export default function SalesTwoPageView() {
   const {
     page,
     categories,
-    productList,
     selectedCategory,
     PRODUCT_PER_PAGE,
     handlePageChange,
     handleCategoryChange,
   } = useSales("men", 1);
+
+  const [productList, setProductList] = useState([]);
+
+  useEffect(() => {
+    if (productList.length === 0) {
+      const loadProducts = async () => {
+        const products = await findAllPublished();
+        setProductList(products);
+      };
+      loadProducts();
+    }
+  }, []);
+
   // CATEGORY NAV LIST
 
   const CATEGORY_NAV = (
