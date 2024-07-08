@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 
 export default function EditProductPageView() {
   const { currentProduct } = useSelector((state) => state.product);
-  console.log("currentProduct ok >> ", currentProduct);
 
   return (
     <PageWrapper title="Edit Product">

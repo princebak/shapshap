@@ -29,7 +29,7 @@ import { changeCurrentProduct } from "redux/slices/productSlice";
 
 // ========================================================================
 export default function ProductRow({ product }) {
-  const { category, name, price, image, brand, id, published, code } =
+  const { category, name, price, images, brand, id, published, code } =
     product || {};
   const router = useRouter();
   const [productPublish, setProductPublish] = useState(published);
@@ -47,7 +47,7 @@ export default function ProductRow({ product }) {
           <Link href={`/vendor/products/${code}`}>
             <Avatar
               alt={name}
-              src={image}
+              src={images && images.length > 0 ? images[0] : ""}
               sx={{
                 borderRadius: 2,
               }}

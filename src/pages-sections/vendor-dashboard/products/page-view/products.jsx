@@ -85,7 +85,7 @@ export default function ProductsPageView({ products }) {
     name: item.name,
     brand: item.brand,
     price: item.price,
-    image: item.thumbnail,
+    images: item.images,
     published: item.status === productStatus.PUBLISHED,
     category: item.categories.join(", "),
   }));

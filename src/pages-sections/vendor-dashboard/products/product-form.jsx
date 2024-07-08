@@ -15,19 +15,28 @@ import DropZone from "components/DropZone";
 import { FlexBox } from "components/flex-box";
 // STYLED COMPONENTS
 
-import { UploadImageBox, StyledClear } from "../styles";
+import { UploadImageBox, StyledClear, StyledIconButton } from "../styles";
 import MessageAlert from "components/MessageAlert";
 import Link from "next/link";
-import { logMessage, productCategories, userStatus } from "utils/constants";
+import {
+  logMessage,
+  productCategories,
+  remoteLink,
+  userStatus,
+} from "utils/constants";
 import { create, findProductByCode, update } from "services/ProductService";
 import Loader from "components/Loader";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
+import { forEach } from "lodash";
+import Edit from "@mui/icons-material/Edit";
+import ProductImage from "components/ProductImage";
 // FORM FIELDS VALIDATION SCHEMA
 
 const VALIDATION_SCHEMA = yup.object().shape({
   name: yup.string().required("Name is required!"),
   categories: yup.array().required("At least one category is required!"),
+  images: yup.array(),
   description: yup.string().required("Description is required!"),
   stock: yup.number().required("Stock is required!"),
   price: yup.number().required("Price is required!"),
@@ -47,56 +56,102 @@ export default function ProductForm({ product }) {
   const router = useRouter();
   const [initialValues, setInitialeValues] = useState(product);
 
+  const [file1, setFile1] = useState(null);
+  const [file2, setFile2] = useState(null);
+  const [file3, setFile3] = useState(null);
+
+  const uploadImage = async (image) => {
+    const formData = new FormData();
+
+    formData.append("file", image);
+    formData.append("upload_preset", "shapshap");
+
+    console.log("upload image formData >> ", formData);
+
+    const uploadResponse = await fetch(remoteLink.COULDINARY_UPLOAD_LINK, {
+      method: "POST",
+      body: formData,
+    });
+
+    const uploadData = await uploadResponse.json();
+
+    return uploadData.secure_url;
+  };
+
   const handleFormSubmit = async (values) => {
     values = { ...values, owner: currentUser._id };
+    let imagesUrls = values.images;
+
     setIsLoading(true);
 
-    if (values._id) {
-      const res = await update(values);
-
-      if (res.error) {
-        setMessage({ content: res.error, color: "red" });
-        setIsLoading(false);
+    if (file1) {
+      const newUrl = await uploadImage(file1);
+      if (imagesUrls.length > 0) {
+        imagesUrls[0] = newUrl;
       } else {
-        setMessage({
-          content: "Product updated with success !",
-          color: "green",
-        });
-
-        router.push("/vendor/products");
-      }
-    } else {
-      const res = await create(values);
-
-      if (res.error) {
-        setMessage({ content: res.error, color: "red" });
-        setIsLoading(false);
-      } else {
-        setMessage({
-          content: "Product created with success !",
-          color: "green",
-        });
-
-        router.push("/vendor/products");
+        imagesUrls = [newUrl];
       }
     }
-  };
+    if (file2) {
+      const newUrl = await uploadImage(file2);
+      if (imagesUrls.length > 1) {
+        imagesUrls[1] = newUrl;
+      } else {
+        imagesUrls = [...imagesUrls, newUrl];
+      }
+    }
 
-  const [files, setFiles] = useState([]);
-  // HANDLE UPDATE NEW IMAGE VIA DROP ZONE
+    if (file3) {
+      const newUrl = await uploadImage(file3);
+      if (imagesUrls.length > 2) {
+        imagesUrls[2] = newUrl;
+      } else {
+        imagesUrls = [...imagesUrls, newUrl];
+      }
+    }
 
-  const handleChangeDropZone = (files) => {
-    files.forEach((file) =>
-      Object.assign(file, {
-        preview: URL.createObjectURL(file),
-      })
-    );
-    setFiles(files);
-  };
-  // HANDLE DELETE UPLOAD IMAGE
+    if (imagesUrls.length > 0) {
+      // If there is new uploaded images we add it to the product
+      values = { ...values, images: imagesUrls };
+    }
 
-  const handleFileDelete = (file) => () => {
-    setFiles((files) => files.filter((item) => item.name !== file.name));
+    if (values.images.length === 0) {
+      setMessage({
+        content: "At least one image is required for the product",
+        color: "red",
+      });
+      setIsLoading(false);
+    } else {
+      if (values._id) {
+        const res = await update(values);
+
+        if (res.error) {
+          setMessage({ content: res.error, color: "red" });
+          setIsLoading(false);
+        } else {
+          setMessage({
+            content: "Product updated with success !",
+            color: "green",
+          });
+
+          router.push("/vendor/products");
+        }
+      } else {
+        const res = await create(values);
+
+        if (res.error) {
+          setMessage({ content: res.error, color: "red" });
+          setIsLoading(false);
+        } else {
+          setMessage({
+            content: "Product created with success !",
+            color: "green",
+          });
+
+          router.push("/vendor/products");
+        }
+      }
+    }
   };
 
   return (
@@ -184,21 +239,27 @@ export default function ProductForm({ product }) {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <DropZone onChange={(files) => handleChangeDropZone(files)} />
+                  {/* <DropZone onChange={(files) => handleChangeDropZone(files)} /> */}
 
                   <FlexBox flexDirection="row" mt={2} flexWrap="wrap" gap={1}>
-                    {files.map((file, index) => {
-                      return (
-                        <UploadImageBox key={index}>
-                          <Box
-                            component="img"
-                            src={file.preview}
-                            width="100%"
-                          />
-                          <StyledClear onClick={handleFileDelete(file)} />
-                        </UploadImageBox>
-                      );
-                    })}
+                    <ProductImage
+                      title={"Main image"}
+                      image={values.images[0]}
+                      handleImageChange={(img) => setFile1(img)}
+                      id="img1"
+                    />
+                    <ProductImage
+                      title={""}
+                      image={values.images[1]}
+                      handleImageChange={(img) => setFile2(img)}
+                      id="img2"
+                    />
+                    <ProductImage
+                      title={""}
+                      image={values.images[2]}
+                      handleImageChange={(img) => setFile3(img)}
+                      id="img3"
+                    />
                   </FlexBox>
                 </Grid>
 
