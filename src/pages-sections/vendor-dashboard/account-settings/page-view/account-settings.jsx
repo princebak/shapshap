@@ -36,7 +36,7 @@ export default function AccountSettingsPageView() {
     currentUser?.profilPicUrl
   );
   const [shopProfileUrl, setShopProfileUrl] = useState(
-    currentUser?.shop.profilPicUrl
+    currentUser?.shop?.profilPicUrl
   );
 
   const initialValues = {
