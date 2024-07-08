@@ -32,11 +32,11 @@ const handler = NextAuth({
           email: credentials.email,
         }).select("+password");
 
-        const { password, ...userWithoutPassword } = user._doc;
-
         if (!user) {
           throw new Error("Email is not registered");
         }
+
+        const { password, ...userWithoutPassword } = user._doc;
 
         if (user.status === userStatus.CREATED) {
           await sendEmailWithEmailJs({
