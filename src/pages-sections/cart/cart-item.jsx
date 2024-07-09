@@ -1,27 +1,28 @@
 import Link from "next/link";
 import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton"; 
+import IconButton from "@mui/material/IconButton";
 // MUI ICON COMPONENTS
 
 import Add from "@mui/icons-material/Add";
 import Close from "@mui/icons-material/Close";
-import Remove from "@mui/icons-material/Remove"; 
+import Remove from "@mui/icons-material/Remove";
 // GLOBAL CUSTOM COMPONENTS
 
 import Image from "components/BazaarImage";
 import { Span } from "components/Typography";
-import { FlexBox } from "components/flex-box"; 
+import { FlexBox } from "components/flex-box";
 // GLOBAL CUSTOM HOOK
 
-import useCart from "hooks/useCart"; 
+import useCart from "hooks/useCart";
 // CUSTOM UTILS LIBRARY FUNCTION
 
-import { currency } from "lib"; 
+import { currency } from "lib";
 // STYLED COMPONENT
 
-import { Wrapper } from "./styles"; 
+import { Wrapper } from "./styles";
+import { useDispatch } from "react-redux";
+import { changeCartAmount } from "redux/slices/cartSlice";
 // =========================================================
-
 
 // =========================================================
 export default function CartItem({
@@ -30,38 +31,47 @@ export default function CartItem({
   qty,
   price,
   imgUrl,
-  slug
+  slug,
+  discount = 0,
 }) {
-  const {
-    dispatch
-  } = useCart(); 
-// HANDLE CHANGE CART PRODUCT QUANTITY
+  price = (price - (discount * price) / 100) * qty;
+  const dispatch = useDispatch();
+  // HANDLE CHANGE CART PRODUCT QUANTITY
 
-  const handleCartAmountChange = amount => () => {
-    dispatch({
-      type: "CHANGE_CART_AMOUNT",
-      payload: {
+  const handleCartAmountChange = (amount) => () => {
+    dispatch(
+      changeCartAmount({
         id,
         name,
         price,
         imgUrl,
         qty: amount,
-        slug
-      }
-    });
+        slug,
+        discount,
+      })
+    );
   };
 
-  return <Wrapper>
-      <Image alt={name} width={140} height={140} display="block" src={imgUrl || "/assets/images/products/iphone-xi.png"} />
+  return (
+    <Wrapper>
+      <Image
+        alt={name}
+        width={140}
+        height={140}
+        display="block"
+        src={imgUrl || "/assets/images/products/iphone-xi.png"}
+      />
 
-      {
-      /* DELETE BUTTON */
-    }
-      <IconButton size="small" onClick={handleCartAmountChange(0)} sx={{
-      position: "absolute",
-      right: 15,
-      top: 15
-    }}>
+      {/* DELETE BUTTON */}
+      <IconButton
+        size="small"
+        onClick={handleCartAmountChange(0)}
+        sx={{
+          position: "absolute",
+          right: 15,
+          top: 15,
+        }}
+      >
         <Close fontSize="small" />
       </IconButton>
 
@@ -72,9 +82,7 @@ export default function CartItem({
           </Span>
         </Link>
 
-        {
-        /* PRODUCT PRICE SECTION */
-      }
+        {/* PRODUCT PRICE SECTION */}
         <FlexBox gap={1} flexWrap="wrap" alignItems="center">
           <Span color="grey.600">
             {currency(price)} x {qty}
@@ -85,13 +93,17 @@ export default function CartItem({
           </Span>
         </FlexBox>
 
-        {
-        /* PRODUCT QUANTITY INC/DEC BUTTONS */
-      }
+        {/* PRODUCT QUANTITY INC/DEC BUTTONS */}
         <FlexBox alignItems="center">
-          <Button color="primary" sx={{
-          p: "5px"
-        }} variant="outlined" disabled={qty === 1} onClick={handleCartAmountChange(qty - 1)}>
+          <Button
+            color="primary"
+            sx={{
+              p: "5px",
+            }}
+            variant="outlined"
+            disabled={qty === 1}
+            onClick={handleCartAmountChange(qty - 1)}
+          >
             <Remove fontSize="small" />
           </Button>
 
@@ -99,12 +111,18 @@ export default function CartItem({
             {qty}
           </Span>
 
-          <Button color="primary" sx={{
-          p: "5px"
-        }} variant="outlined" onClick={handleCartAmountChange(qty + 1)}>
+          <Button
+            color="primary"
+            sx={{
+              p: "5px",
+            }}
+            variant="outlined"
+            onClick={handleCartAmountChange(qty + 1)}
+          >
             <Add fontSize="small" />
           </Button>
         </FlexBox>
       </FlexBox>
-    </Wrapper>;
+    </Wrapper>
+  );
 }

@@ -16,23 +16,28 @@ import Scrollbar from "components/scrollbar";
 // CUSTOM UTILS LIBRARY FUNCTION
 
 import { currency } from "lib";
+import { useDispatch, useSelector } from "react-redux";
+import { changeCartAmount } from "redux/slices/cartSlice";
 // CUSTOM DATA MODEL
 
 // =========================================================
 export default function MiniCart({ toggleSidenav }) {
   const { push } = useRouter();
-  const { state, dispatch } = useCart();
-  const cartList = state.cart;
+
+  const { currentCart: cartList } = useSelector((state) => state.cart);
+
+  const dispatch = useDispatch();
 
   const handleCartAmountChange = (amount, product) => () => {
-    dispatch({
-      type: "CHANGE_CART_AMOUNT",
-      payload: { ...product, qty: amount },
-    });
+    dispatch(changeCartAmount({ ...product, qty: amount }));
   };
 
   const getTotalPrice = () => {
-    return cartList.reduce((acc, item) => acc + item.price * item.qty, 0);
+    return cartList.reduce(
+      (acc, item) =>
+        acc + (item.price - (item.discount * item.price) / 100) * item.qty,
+      0
+    );
   };
 
   const handleNavigate = (path) => () => {

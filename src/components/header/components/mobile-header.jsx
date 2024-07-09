@@ -27,8 +27,9 @@ import useCart from "hooks/useCart";
 
 import useHeader from "../hooks/use-header";
 import AccountPopover from "components/layouts/vendor-dashboard/dashboard-navbar/account-popover";
+import { useSelector } from "react-redux";
 export default function MobileHeader() {
-  const { state } = useCart();
+  const { currentCart } = useSelector((state) => state.cart);
   const {
     dialogOpen,
     sidenavOpen,
@@ -68,7 +69,7 @@ export default function MobileHeader() {
             <AccountPopover />
           </div>
 
-          <Badge badgeContent={state.cart.length} color="primary">
+          <Badge badgeContent={currentCart.length} color="primary">
             <IconButton onClick={toggleSidenav}>
               <Icon.CartBag sx={ICON_STYLE} />
             </IconButton>

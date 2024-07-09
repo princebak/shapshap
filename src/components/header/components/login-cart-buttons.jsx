@@ -9,11 +9,14 @@ import ShoppingBagOutlined from "icons/ShoppingBagOutlined";
 // GLOBAL CUSTOM HOOK
 
 import useCart from "hooks/useCart";
+import { useSelector } from "react-redux";
 // ==============================================================
 
 // ==============================================================
 export default function LoginCartButtons({ toggleDialog, toggleSidenav }) {
-  const { state } = useCart();
+  //const { state } = useCart();
+  const { currentCart } = useSelector((state) => state.cart);
+  console.log("currentCart 88", currentCart);
   const ICON_COLOR = {
     color: "grey.600",
   };
@@ -23,7 +26,7 @@ export default function LoginCartButtons({ toggleDialog, toggleSidenav }) {
         <PersonOutline sx={ICON_COLOR} />
       </IconButton> */}
 
-      <Badge badgeContent={state.cart.length} color="primary">
+      <Badge badgeContent={currentCart.length} color="primary">
         <IconButton onClick={toggleSidenav}>
           <ShoppingBagOutlined sx={ICON_COLOR} />
         </IconButton>
