@@ -34,7 +34,7 @@ export default function CartItem({
   slug,
   discount = 0,
 }) {
-  price = (price - (discount * price) / 100) * qty;
+  price = price - (discount * price) / 100;
   const dispatch = useDispatch();
   // HANDLE CHANGE CART PRODUCT QUANTITY
 

@@ -2,6 +2,7 @@ import { OrdersPageView } from "pages-sections/vendor-dashboard/orders/page-view
 // API FUNCTIONS
 
 import api from "utils/__api__/dashboard";
+import { findOrders } from "../../../../services/OrderService";
 export const metadata = {
   title: "Orders - ShapShap225",
   description: `Bazaar is a React Next.js E-commerce template. Build SEO friendly Online store, delivery app and Multi vendor store`,
@@ -15,5 +16,7 @@ export const metadata = {
 };
 export default async function Orders() {
   const orders = await api.orders();
+  const myOders = await findOrders()
+  console.log("My Orders >>", myOders)
   return <OrdersPageView orders={orders} />;
 }

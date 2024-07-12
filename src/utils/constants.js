@@ -26,6 +26,22 @@ export const productStatus = {
   UNPUBLISHED: "unpublished",
 };
 
+export const orderStatus = {
+  CREATED: "created",
+  PROCESSING: "processing",
+  PAID: "paid",
+  PENDING: "pending",
+  DELIVERED: "delivered",
+  CANCELLED: "cancelled",
+  COMPLETED: "completed",
+};
+
+export const paymentMethod = {
+  CREDIT_DEBIT: "Credit/Debit",
+  PAYPAL: "paypal",
+  CASH: "cash",
+};
+
 export const emailMetadata = {
   SUBJECT_EMAIL_VALIDATION: "Email validation",
   SUBJECT_RESET_PW_VALIDATION: "Reset password validation",

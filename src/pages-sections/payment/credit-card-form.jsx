@@ -1,97 +1,110 @@
-import { useRouter } from "next/navigation"; 
+"use client";
+
+import { useRouter } from "next/navigation";
 // MUI
 
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField"; 
+import TextField from "@mui/material/TextField";
 // YUP
 
-import * as yup from "yup"; 
+import * as yup from "yup";
 // FORMIK
 
-import { Formik } from "formik";
-export default function CreditCardForm() {
-  const router = useRouter();
-  const INITIAL_VALUES = {
-    card_no: "",
-    name: "",
-    exp_date: "",
-    cvc: "",
-    shipping_zip: "",
-    shipping_country: "",
-    shipping_address1: "",
-    shipping_address2: "",
-    billing_name: "",
-    billing_email: "",
-    billing_contact: "",
-    billing_company: "",
-    billing_zip: "",
-    billing_country: "",
-    billing_address1: "",
-    billing_address2: ""
+import { useFormik } from "formik";
+// STRIPE
+
+import {
+  useStripe,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+import { useDispatch, useSelector } from "react-redux";
+import { convertToSubCurrency } from "utils/utilFunctions";
+import { useEffect, useState } from "react";
+import Loader from "components/Loader";
+import MessageAlert from "components/MessageAlert";
+import { localLink, orderStatus } from "utils/constants";
+import { changeOrder } from "redux/slices/orderSlice";
+import { createOrder } from "../../services/OrderService";
+
+export default function CreditCardForm({ amount }) {
+  const { currentOrder } = useSelector((state) => state.order);
+  const stripe = useStripe();
+  const elements = useElements();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch()
+
+  const handleFormSubmit = async (e) => {
+    
+    e.preventDefault();
+    setLoading(true);
+
+    if (!stripe || !elements) {
+      return;
+    }
+    const { error: submitError } = await elements.submit();
+
+    if (submitError) {
+      setErrorMessage(submitError.message);
+      setLoading(false);
+      return;
+    }
+    const { error } = stripe.confirmPayment({
+      elements,
+      clientSecret,
+      confirmParams: {
+        return_url: `${localLink.APP_BASE_PATH}/payment-success?amount=${amount / 100}`,
+      },
+    });
+    if (error) {
+      setErrorMessage(error.message);
+    } else {
+      // set Order to completed
+      currentOrder.status = orderStatus.COMPLETED
+      await createOrder(currentOrder);
+    }
+
+    setLoading(false);
   };
-  const VALIDATION_SCHEMA = yup.object().shape({
-    card_no: yup.string().required("required"),
-    name: yup.string().required("required"),
-    exp_date: yup.string().required("required"),
-    cvc: yup.string().required("required") 
-// shipping_zip: yup.string().required("required"),
-    
-// shipping_country: yup.object().required("required"),
-    
-// shipping_address1: yup.string().required("required"),
-    
-// billing_name: yup.string().required("required"),
-    
-// billing_email: yup.string().required("required"),
-    
-// billing_contact: yup.string().required("required"),
-    
-// billing_zip: yup.string().required("required"),
-    
-// billing_country: yup.string().required("required"),
-    
-// billing_address1: yup.string().required("required"),
 
-  });
+  useEffect(() => {
+    fetch("/api/create-payment-intent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: amount,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => setClientSecret(data.clientSecret));
+  }, [amount]);
 
-  const handleFormSubmit = values => {
-    router.push("/payment");
-    console.log(values);
-  };
+  if (!stripe || !clientSecret || !elements) {
+    return <Loader />;
+  }
 
-  return <Formik onSubmit={handleFormSubmit} initialValues={INITIAL_VALUES} validationSchema={VALIDATION_SCHEMA}>
-      {({
-      values,
-      errors,
-      touched,
-      handleChange,
-      handleBlur,
-      handleSubmit
-    }) => <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth name="card_no" label="Card Number" onBlur={handleBlur} value={values.card_no} onChange={handleChange} helperText={touched.card_no && errors.card_no} />
-            </Grid>
+  return (
+    <form onSubmit={handleFormSubmit} style={{ marginTop: "10px" }}>
+      <MessageAlert message={{ content: errorMessage, color: "red" }} />
+      {clientSecret && <PaymentElement />}
 
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth name="exp_date" label="Exp Date" placeholder="MM/YY" onBlur={handleBlur} onChange={handleChange} value={values.exp_date} helperText={touched.exp_date && errors.exp_date} />
-            </Grid>
-
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth name="name" onBlur={handleBlur} value={values.name} label="Name on Card" onChange={handleChange} helperText={touched.name && errors.name} />
-            </Grid>
-
-            <Grid item sm={6} xs={12}>
-              <TextField fullWidth name="name" onBlur={handleBlur} value={values.name} label="Name on Card" onChange={handleChange} helperText={touched.name && errors.name} />
-            </Grid>
-
-            <Grid item sm={6} xs={12}>
-              <Button variant="outlined" color="primary">
-                Submit
-              </Button>
-            </Grid>
-          </Grid>
-        </form>}
-    </Formik>;
+      <Grid item sm={6} xs={12} mt={3}>
+        <Button
+          disabled={!stripe || loading}
+          variant="contained"
+          color="primary"
+          type="submit"
+          fullWidth
+        >
+          {!loading ? `Pay $${amount / 100}` : "Processing..."}
+        </Button>
+      </Grid>
+    </form>
+  );
 }

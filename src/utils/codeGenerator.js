@@ -1,6 +1,7 @@
 import Product from "models/Product";
 import User from "models/User";
 import { dbConnector } from "./dbConnector";
+import Order from "models/Order";
 
 export const generateUserCode = async (prefix) => {
   await dbConnector();
@@ -16,6 +17,24 @@ export const generateUserCode = async (prefix) => {
     }
   } catch (error) {
     console.log("generateUserCode error >> " + error);
+  }
+
+  return generatedCode;
+};
+
+export const generateOrderCode = async () => {
+  await dbConnector();
+  let generatedCode = "";
+  try {
+    while (generatedCode == "") {
+      generatedCode = generateCode("ODR");
+      let existingCode = await Order.findOne({ code: generatedCode });
+      if (existingCode) {
+        generatedCode = "";
+      }
+    }
+  } catch (error) {
+    console.log("generateOrderCode error >> " + error);
   }
 
   return generatedCode;

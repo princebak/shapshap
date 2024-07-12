@@ -41,7 +41,7 @@ export default function CartPageView() {
 
       {/* CHECKOUT FORM */}
       <Grid item md={4} xs={12}>
-        <CheckoutForm total={getTotalPrice()} />
+        <CheckoutForm total={getTotalPrice()} products={currentCart} />
       </Grid>
     </Grid>
   );

@@ -3,31 +3,30 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
-import Container from "@mui/material/Container"; 
+import Container from "@mui/material/Container";
 // LOCAL CUSTOM COMPONENT
 
 import Stepper from "./stepper";
-const STEPPER_LIST = [{
-  title: "Cart",
-  disabled: false
-}, {
-  title: "Details",
-  disabled: false
-}, {
-  title: "Payment",
-  disabled: false
-}, {
-  title: "Review",
-  disabled: true
-}];
-export default function PageStepper({
-  children
-}) {
+const STEPPER_LIST = [
+  {
+    title: "Cart",
+    disabled: false,
+  },
+  {
+    title: "Details",
+    disabled: false,
+  },
+  {
+    title: "Payment",
+    disabled: false,
+  },
+];
+export default function PageStepper({ children }) {
   const [selectedStep, setSelectedStep] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleStepChange = step => {
+  const handleStepChange = (step) => {
     switch (step) {
       case 0:
         router.push("/cart");
@@ -39,10 +38,6 @@ export default function PageStepper({
 
       case 2:
         router.push("/payment");
-        break;
-
-      case 3:
-        router.push("/orders");
         break;
 
       default:
@@ -68,14 +63,23 @@ export default function PageStepper({
         break;
     }
   }, [pathname]);
-  return <Container className="mt-2 mb-2">
-      <Box mb={3} display={{
-      sm: "block",
-      xs: "none"
-    }}>
-        <Stepper stepperList={STEPPER_LIST} selectedStep={selectedStep} onChange={handleStepChange} />
+  return (
+    <Container className="mt-2 mb-2">
+      <Box
+        mb={3}
+        display={{
+          sm: "block",
+          xs: "none",
+        }}
+      >
+        <Stepper
+          stepperList={STEPPER_LIST}
+          selectedStep={selectedStep}
+          onChange={handleStepChange}
+        />
       </Box>
 
       {children}
-    </Container>;
+    </Container>
+  );
 }

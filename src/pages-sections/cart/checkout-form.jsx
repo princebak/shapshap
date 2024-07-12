@@ -4,34 +4,59 @@ import Link from "next/link";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
 import Divider from "@mui/material/Divider";
-import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
 // GLOBAL CUSTOM HOOK
 
-import useCart from "hooks/useCart";
 // GLOBAL CUSTOM COMPONENTS
 
 import { Span } from "components/Typography";
 import { FlexBetween, FlexBox } from "components/flex-box";
 // DUMMY CUSTOM DATA
 
-import countryList from "data/countryList";
 // CUSTOM UTILS LIBRARY FUNCTION
 
 import { currency } from "lib";
-export default function CheckoutForm({ total }) {
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { changeOrder } from "redux/slices/orderSlice";
+import { useRouter } from "next/navigation";
 
-  const STATE_LIST = [
-    {
-      value: "new-york",
-      label: "New York",
-    },
-    {
-      value: "chicago",
-      label: "Chicago",
-    },
-  ];
+export default function CheckoutForm({ total, products }) {
+  const { currentOrder } = useSelector((state) => state.order);
+  const [note, setNote] = useState(currentOrder.note);
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleNext = (e) => {
+    e.preventDefault();
+    const rawTotal = products.reduce(
+      (acc, item) => acc + item.price * item.qty,
+      0
+    );
+    const totalDiscount = products.reduce((acc, item) => {
+      const discount = item.discount || 0;
+      const price = item.price || 0;
+      const discountAmount = ((price * discount) / 100) * item.qty;
+      return acc + discountAmount;
+    }, 0);
+    const shippingFee = 0;
+    const tax = 0;
+    const total = rawTotal - totalDiscount + shippingFee + tax;
+
+    dispatch(
+      changeOrder({
+        note: note,
+        products: products,
+        rawTotal: rawTotal,
+        totalDiscount: totalDiscount,
+        shippingFee: shippingFee,
+        tax: tax,
+        total: total,
+      })
+    );
+    router.push("/checkout");
+  };
+
   return (
     <Card
       sx={{
@@ -66,9 +91,15 @@ export default function CheckoutForm({ total }) {
           Note
         </Span>
       </FlexBox>
-
       {/* COMMENTS TEXT FIELD */}
-      <TextField variant="outlined" rows={6} fullWidth multiline />
+      <TextField
+        variant="outlined"
+        rows={6}
+        fullWidth
+        multiline
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
 
       <Divider
         sx={{
@@ -76,101 +107,12 @@ export default function CheckoutForm({ total }) {
         }}
       />
 
-      {/* APPLY VOUCHER TEXT FIELD */}
-      <TextField
-        fullWidth
-        size="small"
-        label="Voucher"
-        variant="outlined"
-        placeholder="Voucher"
-      />
-
-      <Button
-        variant="outlined"
-        color="primary"
-        fullWidth
-        sx={{
-          mt: 2,
-          mb: 4,
-        }}
-      >
-        Apply Voucher
-      </Button>
-
-      <Divider
-        sx={{
-          mb: 2,
-        }}
-      />
-
-      <Span fontWeight={600} mb={2} display="block">
-        Shipping Estimates
-      </Span>
-
-      {/* COUNTRY TEXT FIELD */}
-      <Autocomplete
-        fullWidth
-        sx={{
-          mb: 2,
-        }}
-        options={countryList}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            size="small"
-            label="Country"
-            variant="outlined"
-            placeholder="Select Country"
-          />
-        )}
-      />
-
-      {/* STATE/CITY TEXT FIELD */}
-      <TextField
-        select
-        fullWidth
-        size="small"
-        label="State"
-        variant="outlined"
-        placeholder="Select State"
-        defaultValue="new-york"
-      >
-        {STATE_LIST.map(({ label, value }) => (
-          <MenuItem value={value} key={label}>
-            {label}
-          </MenuItem>
-        ))}
-      </TextField>
-
-      {/* ZIP-CODE TEXT FIELD */}
-      <TextField
-        fullWidth
-        size="small"
-        label="Zip Code"
-        placeholder="3100"
-        variant="outlined"
-        sx={{
-          mt: 2,
-        }}
-      />
-
-      <Button
-        variant="outlined"
-        color="primary"
-        fullWidth
-        sx={{
-          my: 2,
-        }}
-      >
-        Calculate Shipping
-      </Button>
-
       <Button
         fullWidth
         color="primary"
-        href="/checkout"
         variant="contained"
-        LinkComponent={Link}
+        type="submit"
+        onClick={(e) => handleNext(e)}
       >
         Checkout Now
       </Button>
