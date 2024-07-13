@@ -17,10 +17,21 @@ export async function findAll() {
   }
 }
 
+export async function findOneByCode(code) {
+  try {
+    await dbConnector();
+    const product = await Product.findOne({ code: code });
+    return dbObjectToJsObject(product);
+  } catch (error) {
+    console.log("error >> ", error);
+    return { error: "Server error" };
+  }
+}
+
 export async function findAllPublished() {
   try {
     await dbConnector();
-    const products = await Product.find({status: productStatus.PUBLISHED});
+    const products = await Product.find({ status: productStatus.PUBLISHED });
     return dbObjectToJsObject(products);
   } catch (error) {
     console.log("error >> ", error);

@@ -87,12 +87,12 @@ export default function PaymentForm() {
       }} /> */}
 
         {/* CASH ON DELIVERY OPTION */}
-        <FormLabel
+        {/*     <FormLabel
           name="cod"
           title="Cash On Delivery"
           handleChange={handlePaymentMethodChange}
           checked={paymentMethod === "cod"}
-        />
+        /> */}
       </Card>
 
       {/* BUTTONS SECTION */}

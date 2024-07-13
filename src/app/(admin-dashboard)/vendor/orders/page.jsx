@@ -15,8 +15,6 @@ export const metadata = {
   keywords: ["e-commerce", "e-commerce template", "next.js", "react"],
 };
 export default async function Orders() {
-  const orders = await api.orders();
-  const myOders = await findOrders()
-  console.log("My Orders >>", myOders)
-  return <OrdersPageView orders={orders} />;
+  const myOrders = await findOrders();
+  return <OrdersPageView orders={myOrders} />;
 }

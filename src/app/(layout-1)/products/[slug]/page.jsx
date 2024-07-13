@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 // PAGE VIEW COMPONENT
 
 import { ProductDetailsPageView } from "pages-sections/product-details/page-view";
+import { findOneByCode } from "services/ProductService";
 // API FUNCTIONS
 
 import api from "utils/__api__/products";
@@ -22,9 +23,10 @@ export const metadata = {
 };
 export default async function ProductDetails({ params }) {
   try {
-    const product = await api.getProduct(params.slug);
-    const relatedProducts = await getRelatedProducts();
-    const frequentlyBought = await getFrequentlyBought();
+    const product = await findOneByCode(params.slug);
+
+    const relatedProducts = await getRelatedProducts(); // ToDO update
+    const frequentlyBought = await getFrequentlyBought(); // ToDO update
     return (
       <ProductDetailsPageView
         product={product}
