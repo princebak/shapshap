@@ -3,7 +3,7 @@ import { orderStatus } from "utils/constants";
 
 const Schema = mongoose.Schema;
 
-const orderSchema = new Schema(
+const myOrderSchema = new Schema(
   {
     code: { type: String, required: true, maxLength: 20 },
     status: { type: String, required: true, default: orderStatus.CREATED },
@@ -29,8 +29,8 @@ const orderSchema = new Schema(
     },
     rawTotal: { type: Number },
     totalDiscount: { type: Number },
-    shippingFee: { type: String, required: true, maxLength: 50, default: 0 },
-    tax: { type: String, required: true, maxLength: 50, default: 0 },
+    shippingFee: { type: Number, default: 0 },
+    tax: { type: Number, default: 0 },
     total: { type: Number },
 
     billingAddress: {
@@ -58,6 +58,6 @@ const orderSchema = new Schema(
   { timestamps: true }
 );
 
-const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
+const MyOrder = mongoose.models?.MyOrder || mongoose.model("MyOrder", myOrderSchema);
 
-export default Order;
+export default MyOrder;

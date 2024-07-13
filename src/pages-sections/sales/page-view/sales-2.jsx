@@ -18,7 +18,7 @@ import useSales from "../use-sales";
 import productDatabase from "data/product-database";
 import { useEffect, useState } from "react";
 import { findAllPublished } from "services/ProductService";
-export default function SalesTwoPageView() {
+export default function SalesTwoPageView({products}) {
   const {
     page,
     categories,
@@ -28,17 +28,7 @@ export default function SalesTwoPageView() {
     handleCategoryChange,
   } = useSales("men", 1);
 
-  const [productList, setProductList] = useState([]);
-
-  useEffect(() => {
-    if (productList.length === 0) {
-      const loadProducts = async () => {
-        const products = await findAllPublished();
-        setProductList(products);
-      };
-      loadProducts();
-    }
-  }, []);
+  const [productList, setProductList] = useState(products);
 
   // CATEGORY NAV LIST
 

@@ -1,7 +1,7 @@
 import Product from "models/Product";
 import User from "models/User";
 import { dbConnector } from "./dbConnector";
-import Order from "models/Order";
+import MyOrder from "models/MyOrder";
 
 export const generateUserCode = async (prefix) => {
   await dbConnector();
@@ -28,7 +28,7 @@ export const generateOrderCode = async () => {
   try {
     while (generatedCode == "") {
       generatedCode = generateCode("ODR");
-      let existingCode = await Order.findOne({ code: generatedCode });
+      let existingCode = await MyOrder.findOne({ code: generatedCode });
       if (existingCode) {
         generatedCode = "";
       }

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import * as yup from "yup";
-import { Formik, useFormik } from "formik";
+import { useFormik } from "formik";
 // DUMMY CUSTOM DATA
 
 import countryList from "data/countryList";

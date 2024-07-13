@@ -4,7 +4,6 @@ import Grid from "@mui/material/Grid";
 // Local CUSTOM COMPONENTS
 
 import PaymentForm from "../payment-form";
-import PaymentSummary from "../payment-summery";
 import { CheckoutSummary } from "pages-sections/checkout/checkout-summery";
 export default function PaymentPageView() {
   return (
@@ -15,7 +14,6 @@ export default function PaymentPageView() {
 
       <Grid item lg={4} md={4} xs={12}>
         <CheckoutSummary />
-        {/* <PaymentSummary /> */}
       </Grid>
     </Grid>
   );

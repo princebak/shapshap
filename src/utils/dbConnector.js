@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 let isConnected = false;
 
 export const dbConnector = async () => {
-  mongoose.set("strictQuery", true);
+  console.log("MOngoDB connectring ...")
+  mongoose?.set("strictQuery", true);
 
   if (isConnected) {
     console.log("MongoDB is already connected !");
@@ -17,7 +18,7 @@ export const dbConnector = async () => {
     "mongodb+srv://princebak:princebak@bakil-free-cluster.oejtkcq.mongodb.net/shapshap?retryWrites=true&w=majority";
 
   try {
-    await mongoose.connect(MONGODB_URI, {
+    await mongoose?.connect(MONGODB_URI, {
       dbName: "shapshap",
       useNewUrlParser: true,
       useUnifiedTopology: true,

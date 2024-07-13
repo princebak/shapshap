@@ -20,26 +20,25 @@ import {
   PaymentElement,
 } from "@stripe/react-stripe-js";
 import { useDispatch, useSelector } from "react-redux";
-import { convertToSubCurrency } from "utils/utilFunctions";
 import { useEffect, useState } from "react";
 import Loader from "components/Loader";
 import MessageAlert from "components/MessageAlert";
-import { localLink, orderStatus } from "utils/constants";
+import { localLink, orderStatus, paymentMethod } from "utils/constants";
 import { changeOrder } from "redux/slices/orderSlice";
-import { createOrder } from "../../services/OrderService";
+import { createOrder } from "services/OrderService";
 
 export default function CreditCardForm({ amount }) {
-  const { currentOrder } = useSelector((state) => state.order);
   const stripe = useStripe();
   const elements = useElements();
   const [errorMessage, setErrorMessage] = useState("");
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
+  const [savedOrderCode, setSavedOrderCode] = useState(null);
+  const { currentOrder } = useSelector((state) => state.order);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const handleFormSubmit = async (e) => {
-    
     e.preventDefault();
     setLoading(true);
 
@@ -57,15 +56,21 @@ export default function CreditCardForm({ amount }) {
       elements,
       clientSecret,
       confirmParams: {
-        return_url: `${localLink.APP_BASE_PATH}/payment-success?amount=${amount / 100}`,
+        return_url: `${localLink.APP_BASE_PATH}/order-confirmation`,
       },
     });
     if (error) {
       setErrorMessage(error.message);
     } else {
-      // set Order to completed
-      currentOrder.status = orderStatus.COMPLETED
-      await createOrder(currentOrder);
+      // When the payment is done, the Order can be completed
+      const newOrder = {
+        ...currentOrder,
+        status: orderStatus.PROCESSING,
+        paymentMethod: paymentMethod.CREDIT_DEBIT,
+      };
+
+      const savedOrder = await createOrder(newOrder);
+      setSavedOrderCode(savedOrder.code);
     }
 
     setLoading(false);
@@ -84,6 +89,18 @@ export default function CreditCardForm({ amount }) {
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
   }, [amount]);
+
+  useEffect(() => {
+    if (savedOrderCode) {
+      dispatch(
+        changeOrder({
+          code: savedOrderCode,
+          status: orderStatus.PROCESSING,
+          paymentMethod: paymentMethod.CREDIT_DEBIT,
+        })
+      );
+    }
+  }, [savedOrderCode]);
 
   if (!stripe || !clientSecret || !elements) {
     return <Loader />;
