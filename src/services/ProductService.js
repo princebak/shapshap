@@ -20,7 +20,7 @@ export async function findAll() {
 export async function findOneByCode(code) {
   try {
     await dbConnector();
-    const product = await Product.findOne({ code: code });
+    const product = await Product.findOne({ code: code }).populate("owner");
     return dbObjectToJsObject(product);
   } catch (error) {
     console.log("error >> ", error);

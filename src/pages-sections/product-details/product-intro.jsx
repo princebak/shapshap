@@ -32,7 +32,8 @@ import { changeCartAmount } from "redux/slices/cartSlice";
 
 // ================================================================
 export default function ProductIntro({ product }) {
-  const { id, price, title, images, slug, thumbnail , brand} = product || {};
+  const { id, price, title, images, slug, thumbnail, brand, owner } =
+    product || {};
   const { currentCart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState(0);
@@ -40,6 +41,12 @@ export default function ProductIntro({ product }) {
     option: "option 1",
     type: "type 1",
   });
+
+  console.log("Pro >>", product);
+
+  const prodVariants = [
+    { id: 1, title: "Categories", values: product.categories || [] },
+  ];
   // HANDLE CHANGE TYPE AND OPTIONS
 
   const handleChangeVariant = (variantName, value) => () => {
@@ -132,8 +139,8 @@ export default function ProductIntro({ product }) {
 
           {/* PRODUCT BRAND */}
           <FlexBox alignItems="center" mb={1}>
-            <div>Brand: </div>
-            <H6>{brand}</H6>
+            <div style={{ marginRight: "10px" }}>Brand: </div>
+            <H6> {brand}</H6>
           </FlexBox>
 
           {/* PRODUCT RATING */}
@@ -144,13 +151,13 @@ export default function ProductIntro({ product }) {
           </FlexBox>
 
           {/* PRODUCT VARIANTS */}
-          {productVariants.map((variant) => (
+          {prodVariants.map((variant) => (
             <Box key={variant.id} mb={2}>
               <H6 mb={1}>{variant.title}</H6>
 
-              {variant.values.map(({ id, value }) => (
+              {variant.values.map((value, index) => (
                 <Chip
-                  key={id}
+                  key={index}
                   label={value}
                   onClick={handleChangeVariant(variant.title, value)}
                   sx={{
@@ -224,9 +231,9 @@ export default function ProductIntro({ product }) {
 
           {/* SHOP NAME */}
           <FlexBox alignItems="center" gap={1} mb={2}>
-            <div>Sold By:</div>
-            <Link href="/shops/scarlett-beauty">
-              <H6>Mobile Store</H6>
+            <div>Sold By: </div>
+            <Link href={`/shops/${owner.code}`}>
+              <H6>{owner.shop.name}</H6>
             </Link>
           </FlexBox>
         </Grid>
