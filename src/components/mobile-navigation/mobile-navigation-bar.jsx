@@ -14,8 +14,9 @@ import useCart from "hooks/useCart";
 // STYLED COMPONENTS
 
 import { iconStyle, StyledNavLink, Wrapper } from "./styles";
+import { useSelector } from "react-redux";
 export default function MobileNavigationBar() {
-  const { state } = useCart();
+  const { currentCart } = useSelector((state) => state.cart);
   const DOWN_900 = useMediaQuery((theme) => theme.breakpoints.down(900));
 
   if (DOWN_900) {
@@ -24,7 +25,7 @@ export default function MobileNavigationBar() {
         {list.map(({ Icon, href, title }) => (
           <StyledNavLink href={href} key={title}>
             {title === "Cart" ? (
-              <Badge badgeContent={state.cart.length} color="primary">
+              <Badge badgeContent={currentCart?.length} color="primary">
                 <Icon fontSize="small" sx={iconStyle} />
               </Badge>
             ) : (
@@ -61,5 +62,4 @@ const list = [
     Icon: ShoppingBagOutlined,
     href: "/cart",
   },
- 
 ];

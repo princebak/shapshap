@@ -11,3 +11,13 @@ export default async function MarketOne() {
     </ShopLayout1>
   );
 }
+
+/*
+
+ <Badge badgeContent={currentCart.length} color="primary">
+        <IconButton onClick={toggleSidenav}>
+          <ShoppingBagOutlined sx={ICON_COLOR} />
+        </IconButton>
+      </Badge>
+
+*/

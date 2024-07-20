@@ -24,6 +24,7 @@ export default function LoginCartButtons({ toggleDialog, toggleSidenav }) {
       {/*  <IconButton onClick={toggleDialog}>
         <PersonOutline sx={ICON_COLOR} />
       </IconButton> */}
+      
 
       <Badge badgeContent={currentCart.length} color="primary">
         <IconButton onClick={toggleSidenav}>
