@@ -21,20 +21,18 @@ import PageWrapper from "../../page-wrapper";
 
 // TABLE HEAD COLUMN DATA
 import { tableHeading } from "../table-heading";
+import NoData from "components/customs/NoData";
+import { useEffect, useState } from "react";
+import { findMerchantOrders } from "services/OrderService";
+import { LensTwoTone } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 // =============================================================================
 
 // =============================================================================
-export default function OrdersPageView({ orders }) {
-  // RESHAPE THE ORDER LIST BASED TABLE HEAD CELL ID
-  console.log("Items >>", orders);
-  const filteredOrders = orders.map((item) => ({
-    id: item?._id,
-    qty: item?.products?.length,
-    purchaseDate: item?.createdAt,
-    billingAddress: item?.shippingAddress,
-    amount: item?.total,
-    status: item?.status,
-  }));
+export default function OrdersPageView() {
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const { currentUser } = useSelector((state) => state.user);
+
   const {
     order,
     orderBy,
@@ -48,6 +46,22 @@ export default function OrdersPageView({ orders }) {
     defaultSort: "purchaseDate",
     defaultOrder: "desc",
   });
+
+  useEffect(() => {
+    findMerchantOrders(currentUser._id).then((orders) => {
+      const filteredOrders = orders.map((item) => ({
+        id: item?._id,
+        code: item?.code,
+        qty: item?.products?.length,
+        purchaseDate: item?.mainOrder?.createdAt,
+        billingAddress: item?.mainOrder?.billingAddress,
+        amount: item?.netTotalPrice,
+        status: item?.status,
+      }));
+      setFilteredOrders(filteredOrders);
+    });
+  }, []);
+
   return (
     <PageWrapper title="Orders">
       <SearchArea
@@ -55,41 +69,48 @@ export default function OrdersPageView({ orders }) {
         buttonText="Create Order"
         url="/admin/orders"
         searchPlaceholder="Search Order..."
+        pageName="orders"
       />
 
       <Card>
-        <Scrollbar>
-          <TableContainer
-            sx={{
-              minWidth: 900,
-            }}
-          >
-            <Table>
-              <TableHeader
-                order={order}
-                hideSelectBtn
-                orderBy={orderBy}
-                heading={tableHeading}
-                numSelected={selected.length}
-                rowCount={filteredList.length}
-                onRequestSort={handleRequestSort}
+        {filteredOrders?.length > 0 ? (
+          <>
+            <Scrollbar>
+              <TableContainer
+                sx={{
+                  minWidth: 900,
+                }}
+              >
+                <Table>
+                  <TableHeader
+                    order={order}
+                    hideSelectBtn
+                    orderBy={orderBy}
+                    heading={tableHeading}
+                    numSelected={selected.length}
+                    rowCount={filteredList.length}
+                    onRequestSort={handleRequestSort}
+                  />
+
+                  <TableBody>
+                    {filteredList.map((order) => (
+                      <OrderRow order={order} key={order.id} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Scrollbar>
+
+            <Stack alignItems="center" my={4}>
+              <TablePagination
+                onChange={handleChangePage}
+                count={Math.ceil(filteredList.length / rowsPerPage)}
               />
-
-              <TableBody>
-                {filteredList.map((order) => (
-                  <OrderRow order={order} key={order.id} />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <Stack alignItems="center" my={4}>
-          <TablePagination
-            onChange={handleChangePage}
-            count={Math.ceil(filteredList.length / rowsPerPage)}
-          />
-        </Stack>
+            </Stack>
+          </>
+        ) : (
+          <NoData message="There is no order yet." />
+        )}
       </Card>
     </PageWrapper>
   );

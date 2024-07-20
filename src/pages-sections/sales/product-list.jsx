@@ -18,6 +18,7 @@ export default function ProductList({ products }) {
             rating={item.rating}
             imgUrl={item.images[0]}
             discount={item.discount}
+            owner={item.owner}
           />
         </Grid>
       ))}

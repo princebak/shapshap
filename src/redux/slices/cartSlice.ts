@@ -7,6 +7,8 @@ const cartSlice = createSlice({
   },
   reducers: {
     changeCartAmount: (state, action) => {
+      console.log("action.payload >>", action.payload);
+
       let cartList = state.currentCart;
       let cartItem = action.payload;
       let exist = cartList.find((item) => item.id === cartItem.id);
@@ -24,7 +26,6 @@ const cartSlice = createSlice({
       }
     },
     resetCart: (state) => {
-      console.log("resetCart");
       state.currentCart = [];
     },
   },

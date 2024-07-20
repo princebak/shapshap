@@ -56,11 +56,13 @@ export default function PaymentForm() {
             stripe={stripePromise}
             options={{
               mode: "payment",
-              amount: convertToSubCurrency(currentOrder.total),
+              amount: convertToSubCurrency(currentOrder.netTotalPrice),
               currency: "usd",
             }}
           >
-            <CreditCardForm amount={convertToSubCurrency(currentOrder.total)} />
+            <CreditCardForm
+              amount={convertToSubCurrency(currentOrder.netTotalPrice)}
+            />
           </Elements>
         )}
 

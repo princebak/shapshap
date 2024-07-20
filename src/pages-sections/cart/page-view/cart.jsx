@@ -9,16 +9,13 @@ import useCart from "hooks/useCart";
 import CartItem from "../cart-item";
 import CheckoutForm from "../checkout-form";
 import { useSelector } from "react-redux";
+import { getTotalGrossPriceAndDiscount } from "utils/utilFunctions";
+
 export default function CartPageView() {
   const { currentCart } = useSelector((state) => state.cart);
 
-  const getTotalPrice = () => {
-    return currentCart.reduce(
-      (acc, item) =>
-        acc + (item.price - (item.discount * item.price) / 100) * item.qty,
-      0
-    );
-  };
+  const { grossTotalPrice, totalDiscount } =
+    getTotalGrossPriceAndDiscount(currentCart);
 
   return (
     <Grid container spacing={3}>
@@ -41,7 +38,10 @@ export default function CartPageView() {
 
       {/* CHECKOUT FORM */}
       <Grid item md={4} xs={12}>
-        <CheckoutForm total={getTotalPrice()} products={currentCart} />
+        <CheckoutForm
+          total={grossTotalPrice - totalDiscount}
+          products={currentCart}
+        />
       </Grid>
     </Grid>
   );

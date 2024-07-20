@@ -7,7 +7,7 @@ const orderInitialState = {
   billingAddress: {},
   note: "",
   paymentMethod: "",
-  rawTotal: 0,
+  grossTotalPrice: 0,
   totalDiscount: 0,
   shippingFee: 0,
   tax: 0,
@@ -21,11 +21,10 @@ const orderSlice = createSlice({
   },
   reducers: {
     changeOrder: (state, action) => {
+      console.log("action.payload >>", action.payload);
       state.currentOrder = { ...state.currentOrder, ...action.payload };
     },
     reinitOrder: (state) => {
-      console.log("reinitOrder");
-
       state.currentOrder = orderInitialState;
     },
   },

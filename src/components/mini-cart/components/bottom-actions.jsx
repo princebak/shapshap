@@ -12,7 +12,7 @@ export default function BottomActions({
       <Button fullWidth color="primary" variant="contained" sx={{
       mb: "0.75rem",
       height: "40px"
-    }} onClick={handleNavigate("/checkout-alternative")}>
+    }} onClick={handleNavigate("/checkout")}>
         Checkout Now ({total})
       </Button>
 

@@ -15,13 +15,11 @@ import { H6, Tiny } from "components/Typography";
 // CUSTOM UTILS LIBRARY FUNCTION
 
 import { currency } from "lib";
+import { getItemPrice } from "utils/utilFunctions";
 // CUSTOM DATA MODEL
 
 // ==============================================================
 export default function MiniCartItem({ item, handleCartAmountChange }) {
-  const discount = item.discount || 0;
-  const price = item.price - (discount * item.price) / 100;
-
   return (
     <FlexBox
       py={2}
@@ -89,11 +87,11 @@ export default function MiniCartItem({ item, handleCartAmountChange }) {
         </Link>
 
         <Tiny color="grey.600">
-          {currency(price)} x {item.qty}
+          {currency(getItemPrice(item))} x {item.qty}
         </Tiny>
 
         <H6 color="primary.main" mt={0.5}>
-          {currency(price * item.qty)}
+          {currency(getItemPrice(item) * item.qty)}
         </H6>
       </Box>
 

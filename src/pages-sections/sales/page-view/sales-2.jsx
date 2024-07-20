@@ -16,9 +16,9 @@ import useSales from "../use-sales";
 // PRODUCT DATA LIST
 
 import productDatabase from "data/product-database";
-import { useEffect, useState } from "react";
-import { findAllPublished } from "services/ProductService";
-export default function SalesTwoPageView({products}) {
+import { useState } from "react";
+
+export default function SalesTwoPageView({ products }) {
   const {
     page,
     categories,

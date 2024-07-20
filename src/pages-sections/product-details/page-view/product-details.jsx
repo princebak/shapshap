@@ -24,6 +24,7 @@ export default function ProductDetailsPageView({ product }) {
     categories: product.categories,
     stock: product.stock,
     owner: product.owner,
+    discount: product.discount,
   };
   return (
     <Container className="mt-2 mb-2">

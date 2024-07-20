@@ -16,7 +16,6 @@ import { useSelector } from "react-redux";
 export default function LoginCartButtons({ toggleDialog, toggleSidenav }) {
   //const { state } = useCart();
   const { currentCart } = useSelector((state) => state.cart);
-  console.log("currentCart 88", currentCart);
   const ICON_COLOR = {
     color: "grey.600",
   };

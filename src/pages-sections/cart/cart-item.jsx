@@ -22,6 +22,7 @@ import { currency } from "lib";
 import { Wrapper } from "./styles";
 import { useDispatch } from "react-redux";
 import { changeCartAmount } from "redux/slices/cartSlice";
+import { getItemPrice } from "utils/utilFunctions";
 // =========================================================
 
 // =========================================================
@@ -34,7 +35,6 @@ export default function CartItem({
   slug,
   discount = 0,
 }) {
-  price = price - (discount * price) / 100;
   const dispatch = useDispatch();
   // HANDLE CHANGE CART PRODUCT QUANTITY
 
@@ -85,11 +85,11 @@ export default function CartItem({
         {/* PRODUCT PRICE SECTION */}
         <FlexBox gap={1} flexWrap="wrap" alignItems="center">
           <Span color="grey.600">
-            {currency(price)} x {qty}
+            {currency(getItemPrice({ price, qty, discount }))} x {qty}
           </Span>
 
           <Span fontWeight={600} color="primary.main">
-            {currency(price * qty)}
+            {currency(getItemPrice({ price, qty, discount }) * qty)}
           </Span>
         </FlexBox>
 

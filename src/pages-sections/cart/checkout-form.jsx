@@ -20,6 +20,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { changeOrder } from "redux/slices/orderSlice";
 import { useRouter } from "next/navigation";
+import {
+  getTotalGrossPriceAndDiscount,
+  getTotalNetPrice,
+} from "utils/utilFunctions";
+import { fees } from "utils/constants";
 
 export default function CheckoutForm({ total, products }) {
   const { currentOrder } = useSelector((state) => state.order);
@@ -29,29 +34,19 @@ export default function CheckoutForm({ total, products }) {
 
   const handleNext = (e) => {
     e.preventDefault();
-    const rawTotal = products.reduce(
-      (acc, item) => acc + item.price * item.qty,
-      0
-    );
-    const totalDiscount = products.reduce((acc, item) => {
-      const discount = item.discount || 0;
-      const price = item.price || 0;
-      const discountAmount = ((price * discount) / 100) * item.qty;
-      return acc + discountAmount;
-    }, 0);
-    const shippingFee = 0;
-    const tax = 0;
-    const total = rawTotal - totalDiscount + shippingFee + tax;
+
+    const { grossTotalPrice, totalDiscount } =
+      getTotalGrossPriceAndDiscount(products);
 
     dispatch(
       changeOrder({
         note: note,
         products: products,
-        rawTotal: rawTotal,
+        grossTotalPrice: grossTotalPrice,
         totalDiscount: totalDiscount,
-        shippingFee: shippingFee,
-        tax: tax,
-        total: total,
+        shippingFee: fees.SHIPPING,
+        tax: fees.TAX,
+        netTotalPrice: getTotalNetPrice(products),
       })
     );
     router.push("/checkout");

@@ -21,7 +21,7 @@ export default function CheckoutSummary() {
         p: 3,
       }}
     >
-      <ListItem mb={1} title="Subtotal" value={currentOrder.rawTotal} />
+      <ListItem mb={1} title="Subtotal" value={currentOrder.grossTotalPrice} />
       <ListItem mb={1} title="Shipping" value={currentOrder.shippingFee} />
       <ListItem mb={1} title="Tax" value={currentOrder.tax} />
       <ListItem mb={1} title="Discount" value={currentOrder.totalDiscount} />
@@ -33,7 +33,7 @@ export default function CheckoutSummary() {
       />
 
       <Paragraph fontSize={25} fontWeight={600} lineHeight={1}>
-        {currency(currentOrder.total)}
+        {currency(currentOrder.netTotalPrice)}
       </Paragraph>
     </Card>
   );

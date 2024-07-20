@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { orderStatus } from "utils/constants";
+import { fees, orderStatus } from "utils/constants";
 
 const Schema = mongoose.Schema;
 
@@ -27,11 +27,11 @@ const myOrderSchema = new Schema(
       },
       required: true,
     },
-    rawTotal: { type: Number },
+    grossTotalPrice: { type: Number },
     totalDiscount: { type: Number },
-    shippingFee: { type: Number, default: 0 },
-    tax: { type: Number, default: 0 },
-    total: { type: Number },
+    shippingFee: { type: Number, default: fees.SHIPPING },
+    tax: { type: Number, default: fees.TAX },
+    netTotalPrice: { type: Number },
 
     billingAddress: {
       type: {

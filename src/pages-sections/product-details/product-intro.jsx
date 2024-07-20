@@ -28,11 +28,12 @@ import { currency } from "lib";
 import productVariants from "data/product-variants";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCartAmount } from "redux/slices/cartSlice";
+import { getItemPrice } from "utils/utilFunctions";
 // CUSTOM DATA MODEL
 
 // ================================================================
 export default function ProductIntro({ product }) {
-  const { id, price, title, images, slug, thumbnail, brand, owner } =
+  const { id, price, title, images, slug, thumbnail, brand, owner, discount } =
     product || {};
   const { currentCart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
@@ -177,9 +178,24 @@ export default function ProductIntro({ product }) {
 
           {/* PRICE & STOCK */}
           <Box pt={1} mb={3}>
-            <H2 color="primary.main" mb={0.5} lineHeight="1">
-              {currency(price)}
-            </H2>
+            {discount ? (
+              <div style={{ display: "flex", gap: "10px", alignItems:"center" }}>
+                <H2 color="primary.main" mb={0.5} lineHeight="1">
+                  {currency(getItemPrice({ price, discount }))}
+                </H2>
+
+                <label
+                  style={{ textDecoration: "line-through", color: "gray" }}
+                >
+                  {currency(price)}
+                </label>
+              </div>
+            ) : (
+              <H2 color="primary.main" mb={0.5} lineHeight="1">
+                {currency(price)}
+              </H2>
+            )}
+
             <Box color="inherit">Stock Available</Box>
           </Box>
 

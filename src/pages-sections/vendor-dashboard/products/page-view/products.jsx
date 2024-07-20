@@ -22,6 +22,7 @@ import { productStatus } from "utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { findAll, findAllByUserId } from "services/ProductService";
 import { loadProducts } from "redux/slices/productSlice";
+import NoData from "components/customs/NoData";
 // CUSTOM DATA MODEL
 
 // TABLE HEADING DATA LIST
@@ -111,38 +112,44 @@ export default function ProductsPageView({ products }) {
       />
 
       <Card>
-        <Scrollbar autoHide={false}>
-          <TableContainer
-            sx={{
-              minWidth: 900,
-            }}
-          >
-            <Table>
-              <TableHeader
-                order={order}
-                hideSelectBtn
-                orderBy={orderBy}
-                heading={tableHeading}
-                rowCount={productList.length}
-                numSelected={selected.length}
-                onRequestSort={handleRequestSort}
+        {productList.length ? (
+          <>
+            <Scrollbar autoHide={false}>
+              <TableContainer
+                sx={{
+                  minWidth: 900,
+                }}
+              >
+                <Table>
+                  <TableHeader
+                    order={order}
+                    hideSelectBtn
+                    orderBy={orderBy}
+                    heading={tableHeading}
+                    rowCount={productList.length}
+                    numSelected={selected.length}
+                    onRequestSort={handleRequestSort}
+                  />
+
+                  <TableBody>
+                    {filteredList.map((product, index) => (
+                      <ProductRow key={index} product={product} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Scrollbar>
+
+            <Stack alignItems="center" my={4}>
+              <TablePagination
+                onChange={handleChangePage}
+                count={Math.ceil(productList.length / rowsPerPage)}
               />
-
-              <TableBody>
-                {filteredList.map((product, index) => (
-                  <ProductRow key={index} product={product} />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Scrollbar>
-
-        <Stack alignItems="center" my={4}>
-          <TablePagination
-            onChange={handleChangePage}
-            count={Math.ceil(productList.length / rowsPerPage)}
-          />
-        </Stack>
+            </Stack>
+          </>
+        ) : (
+          <NoData message="There is no product, click the add button." />
+        )}
       </Card>
     </PageWrapper>
   );

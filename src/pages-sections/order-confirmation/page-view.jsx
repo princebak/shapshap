@@ -12,7 +12,7 @@ import { H1, Paragraph } from "components/Typography";
 import { useDispatch, useSelector } from "react-redux";
 import { orderStatus } from "utils/constants";
 import { useRouter } from "next/navigation";
-import { completeOrder, createOrder } from "services/OrderService";
+import { completeOrder } from "services/OrderService";
 import { useEffect, useState } from "react";
 import { reinitOrder } from "redux/slices/orderSlice";
 import { resetCart } from "redux/slices/cartSlice";
@@ -30,24 +30,19 @@ const StyledButton = styled(Button)({
 });
 export default function OrderConfirmationPageView() {
   const { currentOrder } = useSelector((state) => state.order);
-  const router = useRouter();
-  const [orderIsSaved, setOrderIsSaved] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const completeTheOrder = async () => {
       if (currentOrder?.status === orderStatus.PROCESSING) {
         await completeOrder(currentOrder.code);
-        setOrderIsSaved(true);
       }
     };
-    if (orderIsSaved) {
-      dispatch(reinitOrder());
-      dispatch(resetCart());
-    } else {
-      completeTheOrder();
-    }
-  }, [orderIsSaved]);
+    completeTheOrder();
+
+    dispatch(reinitOrder());
+    dispatch(resetCart());
+  }, []);
 
   return (
     <Container className="mt-2 mb-10">

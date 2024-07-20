@@ -19,11 +19,11 @@ import {
 
 // ========================================================================
 export default function OrderRow({ order }) {
-  const { amount, id, qty, purchaseDate, billingAddress, status } = order;
+  const { amount, code, qty, purchaseDate, billingAddress, status } = order;
   const router = useRouter();
   return (
     <StyledTableRow tabIndex={-1} role="checkbox">
-      <StyledTableCell align="left">#{id}</StyledTableCell>
+      <StyledTableCell align="left">#{code}</StyledTableCell>
       <StyledTableCell align="left">{qty}</StyledTableCell>
 
       <StyledTableCell
@@ -51,7 +51,7 @@ export default function OrderRow({ order }) {
       </StyledTableCell>
 
       <StyledTableCell align="center">
-        <StyledIconButton onClick={() => router.push(`/admin/orders/${id}`)}>
+        <StyledIconButton onClick={() => router.push(`/admin/orders/${code}`)}>
           <RemoveRedEye />
         </StyledIconButton>
 

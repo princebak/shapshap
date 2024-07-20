@@ -92,3 +92,9 @@ export const productCategories = [
   "Hardware",
   "Cosmetics",
 ];
+
+export const fees = {
+  COMMISSION: 0,
+  SHIPPING: 0,
+  TAX: 0,
+};

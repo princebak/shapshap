@@ -9,14 +9,11 @@ export async function POST(request) {
   try {
     const { amount } = await request.json();
 
-    console.log("DATA22", amount);
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
       currency: "usd",
       automatic_payment_methods: { enabled: true },
     });
-    console.log("paymentIntent", paymentIntent);
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.log("PaymentIntent error", error);

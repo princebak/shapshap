@@ -1,10 +1,19 @@
 "use server";
 
+import MerchantOrder from "models/MerchantOrder";
 import MyOrder from "models/MyOrder";
-import { generateOrderCode } from "utils/codeGenerator";
-import { orderStatus } from "utils/constants";
+import {
+  generateMerchantOrderCode,
+  generateOrderCode,
+} from "utils/codeGenerator";
+import { fees, orderStatus, userType } from "utils/constants";
 import { dbConnector } from "utils/dbConnector";
-import { dbObjectToJsObject } from "utils/utilFunctions";
+import {
+  dbObjectToJsObject,
+  getTotalGrossPriceAndDiscount,
+  getTotalNetPrice,
+  groupProductsByVendor,
+} from "utils/utilFunctions";
 
 export async function createOrder(order) {
   try {
@@ -28,7 +37,43 @@ export async function completeOrder(code) {
   try {
     await dbConnector();
 
-    const res = await MyOrder.findOneAndUpdate({code:code}, {status: orderStatus.COMPLETED})
+    const res = await MyOrder.findOne({ code: code }).populate(
+      "products.owner"
+    );
+
+    console.log("completeOrder status >>", res.status);
+
+    if (res.status !== orderStatus.COMPLETED) {
+      await MyOrder.findOneAndUpdate(
+        { code: code },
+        { status: orderStatus.COMPLETED }
+      );
+      const productsByVendor = groupProductsByVendor(res.products);
+
+      for (const owner in productsByVendor) {
+        const code = await generateMerchantOrderCode();
+        const ownerProducts = productsByVendor[owner];
+
+        const { grossTotalPrice, totalDiscount } =
+          getTotalGrossPriceAndDiscount(ownerProducts);
+
+        const merchantOrder = {
+          owner: owner,
+          products: ownerProducts,
+          mainOrder: res._id,
+          code: code,
+          status: orderStatus.COMPLETED,
+          grossTotalPrice: grossTotalPrice,
+          totalDiscount: totalDiscount,
+          commission: fees.COMMISSION,
+          netTotalPrice: getTotalNetPrice(ownerProducts, userType.MERCHANT), // for the merchant we're taking into account the commission if exists
+        };
+
+        const newMerchantOrder = new MerchantOrder(merchantOrder);
+        await newMerchantOrder.save();
+        console.log("newMerchantOrder.save();");
+      }
+    }
 
     return dbObjectToJsObject(res);
   } catch (error) {
@@ -40,8 +85,22 @@ export async function completeOrder(code) {
 export async function findOrders() {
   try {
     await dbConnector();
-    console.log("Finding orders");
     const res = await MyOrder.find();
+
+    return dbObjectToJsObject(res);
+  } catch (error) {
+    console.log("Error >>", error);
+    return { error: "Server error" };
+  }
+}
+
+export async function findMerchantOrders(merchantId) {
+  try {
+    await dbConnector();
+
+    const res = await MerchantOrder.find({ owner: merchantId }).populate(
+      "mainOrder"
+    );
 
     return dbObjectToJsObject(res);
   } catch (error) {

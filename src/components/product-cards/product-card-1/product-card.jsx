@@ -35,6 +35,7 @@ export default function ProductCard1({
   hoverEffect,
   discount = 5,
   showProductSize,
+  owner,
 }) {
   const {
     isFavorite,
@@ -54,6 +55,7 @@ export default function ProductCard1({
       name: title,
       discount,
       qty: (cartItem?.qty || 0) + 1,
+      owner,
     };
     handleCartAmountChange(product);
   };
@@ -67,6 +69,7 @@ export default function ProductCard1({
       name: title,
       discount,
       qty: (cartItem?.qty || 0) - 1,
+      owner,
     };
     handleCartAmountChange(product, "remove");
   };

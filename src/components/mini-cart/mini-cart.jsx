@@ -18,6 +18,7 @@ import Scrollbar from "components/scrollbar";
 import { currency } from "lib";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCartAmount } from "redux/slices/cartSlice";
+import { getTotalGrossPriceAndDiscount } from "utils/utilFunctions";
 // CUSTOM DATA MODEL
 
 // =========================================================
@@ -25,19 +26,13 @@ export default function MiniCart({ toggleSidenav }) {
   const { push } = useRouter();
 
   const { currentCart: cartList } = useSelector((state) => state.cart);
+  const { grossTotalPrice, totalDiscount } =
+    getTotalGrossPriceAndDiscount(cartList);
 
   const dispatch = useDispatch();
 
   const handleCartAmountChange = (amount, product) => () => {
     dispatch(changeCartAmount({ ...product, qty: amount }));
-  };
-
-  const getTotalPrice = () => {
-    return cartList.reduce(
-      (acc, item) =>
-        acc + (item.price - (item.discount * item.price) / 100) * item.qty,
-      0
-    );
   };
 
   const handleNavigate = (path) => () => {
@@ -72,7 +67,7 @@ export default function MiniCart({ toggleSidenav }) {
       {/* CART BOTTOM ACTION BUTTONS */}
       {cartList.length > 0 ? (
         <BottomActions
-          total={currency(getTotalPrice())}
+          total={currency(grossTotalPrice - totalDiscount)}
           handleNavigate={handleNavigate}
         />
       ) : null}
