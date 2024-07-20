@@ -18,7 +18,12 @@ import Scrollbar from "components/scrollbar";
 import { currency } from "lib";
 import { useDispatch, useSelector } from "react-redux";
 import { changeCartAmount } from "redux/slices/cartSlice";
-import { getTotalGrossPriceAndDiscount } from "utils/utilFunctions";
+import {
+  getTotalGrossPriceAndDiscount,
+  getTotalNetPrice,
+} from "utils/utilFunctions";
+import { fees } from "utils/constants";
+import { changeOrder } from "redux/slices/orderSlice";
 // CUSTOM DATA MODEL
 
 // =========================================================
@@ -34,9 +39,25 @@ export default function MiniCart({ toggleSidenav }) {
   const handleCartAmountChange = (amount, product) => () => {
     dispatch(changeCartAmount({ ...product, qty: amount }));
   };
+  const changeMyOrder = () => {
+    dispatch(
+      changeOrder({
+        note: "...",
+        products: cartList,
+        grossTotalPrice: grossTotalPrice,
+        totalDiscount: totalDiscount,
+        shippingFee: fees.SHIPPING,
+        tax: fees.TAX,
+        netTotalPrice: getTotalNetPrice(cartList),
+      })
+    );
+  };
 
   const handleNavigate = (path) => () => {
     toggleSidenav();
+    if (path === "/checkout") {
+      changeMyOrder()
+    }
     push(path);
   };
 
