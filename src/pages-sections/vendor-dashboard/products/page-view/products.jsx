@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { findAll, findAllByUserId } from "services/ProductService";
 import { loadProducts } from "redux/slices/productSlice";
 import NoData from "components/customs/NoData";
+import { getTheDesiredPage } from "utils/utilFunctions";
 // CUSTOM DATA MODEL
 
 // TABLE HEADING DATA LIST
@@ -61,58 +62,88 @@ const tableHeading = [
 // =============================================================================
 
 // =============================================================================
-export default function ProductsPageView({ products }) {
-  const [productList, setProductList] = useState([]);
+export default function ProductsPageView() {
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
   const distpatch = useDispatch();
+  // Pagination and Search
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [totalElements, setTotalElements] = useState(0);
+  const [pageLimit, setPageLimit] = useState();
+  const [totalPages, setTotalPages] = useState(0);
 
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (productList.length === 0) {
-      const loadProductList = async () => {
-        const products = await findAllByUserId(currentUser._id);
-        setProductList(products);
-        distpatch(loadProducts(products));
-      };
-      loadProductList();
-    }
-  }, []);
+    console.log("useEffect", page);
+    const loadProductList = async () => {
+      const res = await findAllByUserId(currentUser._id, page, search); // findAll(page, search); //
+      console.log("TEST59 >> ", res);
+      setFilteredProducts(getFilteredProducts(res.content));
+      setPageLimit(res.pageLimit);
+      setTotalElements(res.totalElements);
+      setPage(res.currentPage);
+      setTotalPages(res.totalPages);
+      distpatch(loadProducts(res.content));
+    };
+    loadProductList();
+  }, [page, search]);
 
   // RESHAPE THE PRODUCT LIST BASED TABLE HEAD CELL ID
 
-  const filteredProducts = productList.map((item) => ({
-    id: item._id,
-    code: item.code,
-    name: item.name,
-    brand: item.brand,
-    price: item.price,
-    images: item.images,
-    published: item.status === productStatus.PUBLISHED,
-    category: item.categories.join(", "),
-  }));
+  const { order, orderBy, selected, filteredList, handleRequestSort } =
+    useMuiTable({
+      listData: filteredProducts,
+    });
 
-  const {
-    order,
-    orderBy,
-    selected,
-    rowsPerPage,
-    filteredList,
-    handleChangePage,
-    handleRequestSort,
-  } = useMuiTable({
-    listData: filteredProducts,
-  });
+  const handleChangePage = (e) => {
+    const el = e.target.outerHTML;
+
+    if (el.includes("NavigateNextIcon")) {
+      console.log("NavigateNextIcon");
+      setPage(page + 1);
+    } else if (el.includes("NavigateBeforeIcon")) {
+      setPage(page - 1);
+      console.log("NavigateBeforeIcon");
+    } else {
+      const p = getTheDesiredPage(el);
+      console.log("other");
+
+      setPage(p);
+    }
+  };
+
+  const handleSearch = (e) => {
+    setTimeout(() => {
+      setSearch(e.target.value);
+    }, 2000);
+  };
+
+  const getFilteredProducts = (list) => {
+    return list.map((item) => ({
+      id: item._id,
+      code: item.code,
+      name: item.name,
+      brand: item.brand,
+      price: item.price,
+      images: item.images,
+      published: item.status === productStatus.PUBLISHED,
+      category: item.categories.join(", "),
+    }));
+  };
+
   return (
     <PageWrapper title="Product List">
       <SearchArea
-        handleSearch={() => {}}
+        handleSearch={handleSearch}
         buttonText="Add Product"
         url="/vendor/products/create"
         searchPlaceholder="Search Product..."
       />
 
       <Card>
-        {productList.length ? (
+        {filteredProducts.length ? (
           <>
             <Scrollbar autoHide={false}>
               <TableContainer
@@ -126,7 +157,7 @@ export default function ProductsPageView({ products }) {
                     hideSelectBtn
                     orderBy={orderBy}
                     heading={tableHeading}
-                    rowCount={productList.length}
+                    rowCount={filteredProducts.length}
                     numSelected={selected.length}
                     onRequestSort={handleRequestSort}
                   />
@@ -141,10 +172,7 @@ export default function ProductsPageView({ products }) {
             </Scrollbar>
 
             <Stack alignItems="center" my={4}>
-              <TablePagination
-                onChange={handleChangePage}
-                count={Math.ceil(productList.length / rowsPerPage)}
-              />
+              <TablePagination onChange={handleChangePage} count={totalPages} />
             </Stack>
           </>
         ) : (

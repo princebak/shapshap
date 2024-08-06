@@ -98,3 +98,5 @@ export const fees = {
   SHIPPING: 0,
   TAX: 0,
 };
+
+export const PAGE_LIMIT = 2;

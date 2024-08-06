@@ -14,11 +14,12 @@ export default function SearchArea({
   buttonText = "Add Product",
   url = "/",
   pageName = "",
+  handleSearch,
 }) {
   const downSM = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   return (
     <FlexBox mb={2} gap={2} justifyContent="space-between" flexWrap="wrap">
-      <SearchInput placeholder={searchPlaceholder} />
+      <SearchInput placeholder={searchPlaceholder} onChange={handleSearch} />
       {pageName != "orders" ? (
         <Button
           href={url}

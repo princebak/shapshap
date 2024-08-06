@@ -14,7 +14,5 @@ export const metadata = {
   keywords: ["e-commerce", "e-commerce template", "next.js", "react"],
 };
 export default async function Products() {
-  const products = await findAll(); // api.products();
-
-  return <ProductsPageView products={products}/>;
+  return <ProductsPageView />;
 }

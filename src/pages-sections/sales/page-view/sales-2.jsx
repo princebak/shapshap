@@ -15,20 +15,65 @@ import SalesLayout from "components/layouts/sales-layout";
 import useSales from "../use-sales";
 // PRODUCT DATA LIST
 
-import productDatabase from "data/product-database";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { findAllPublished } from "services/ProductService";
+import { loadProducts } from "redux/slices/productSlice";
+import { useDispatch } from "react-redux";
+import { getTheDesiredPage } from "utils/utilFunctions";
 
-export default function SalesTwoPageView({ products }) {
-  const {
-    page,
-    categories,
-    selectedCategory,
-    PRODUCT_PER_PAGE,
-    handlePageChange,
-    handleCategoryChange,
-  } = useSales("men", 1);
+export default function SalesTwoPageView() {
+  const { categories, selectedCategory, handleCategoryChange } = useSales(
+    "men",
+    1
+  );
 
-  const [productList, setProductList] = useState(products);
+  // Pagination and Search
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [totalElements, setTotalElements] = useState(0);
+  const [pageLimit, setPageLimit] = useState();
+  const [totalPages, setTotalPages] = useState(0);
+  const distpatch = useDispatch();
+
+  const [productList, setProductList] = useState([]);
+
+  useEffect(() => {
+    console.log("useEffect", page);
+    const loadProductList = async () => {
+      const res = await findAllPublished(page, search);
+      console.log("TEST59 >> ", res);
+      setProductList(res.content);
+      setPageLimit(res.pageLimit);
+      setTotalElements(res.totalElements);
+      setPage(res.currentPage);
+      setTotalPages(res.totalPages);
+      distpatch(loadProducts(res.content));
+    };
+    loadProductList();
+  }, [page, search]);
+
+  const handleChangePage = (e) => {
+    const el = e.target.outerHTML;
+
+    if (el.includes("NavigateNextIcon")) {
+      console.log("NavigateNextIcon", el);
+      setPage(page + 1);
+    } else if (el.includes("NavigateBeforeIcon")) {
+      setPage(page - 1);
+      console.log("NavigateBeforeIcon", el);
+    } else {
+      const p = getTheDesiredPage(el);
+      console.log("other", el);
+
+      setPage(p);
+    }
+  };
+
+  const handleSearch = (e) => {
+    setTimeout(() => {
+      setSearch(e.target.value);
+    }, 2000);
+  };
 
   // CATEGORY NAV LIST
 
@@ -42,7 +87,7 @@ export default function SalesTwoPageView({ products }) {
     </Sticky>
   );
   return (
-    <SalesLayout type="two" categoryNav={CATEGORY_NAV}>
+    <SalesLayout type="two" categoryNav={""}>
       <Container className="mt-2">
         {/* PRODUCT LIST AREA */}
         <ProductList products={productList} />
@@ -50,9 +95,9 @@ export default function SalesTwoPageView({ products }) {
         {/* PAGINATION AREA */}
         <ProductPagination
           page={page}
-          perPage={PRODUCT_PER_PAGE}
-          handlePageChange={handlePageChange}
-          totalProducts={productDatabase.length}
+          perPage={pageLimit}
+          handlePageChange={handleChangePage}
+          totalProducts={totalElements}
         />
       </Container>
     </SalesLayout>

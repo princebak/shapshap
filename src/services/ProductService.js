@@ -2,15 +2,20 @@
 
 import Product from "models/Product";
 import { generateProductCode } from "utils/codeGenerator";
-import { productStatus } from "utils/constants";
+import { PAGE_LIMIT, productStatus } from "utils/constants";
 import { dbConnector } from "utils/dbConnector";
-import { dbObjectToJsObject } from "utils/utilFunctions";
+import {
+  dbObjectToJsObject,
+  getContentWithPagination,
+} from "utils/utilFunctions";
 
-export async function findAll() {
+export async function findAll(page = 1, search = "") {
   try {
     await dbConnector();
     const products = await Product.find();
-    return dbObjectToJsObject(products);
+    const res = getContentWithPagination(products, page, search);
+
+    return dbObjectToJsObject(res);
   } catch (error) {
     console.log("error >> ", error);
     return { error: "Server error" };
@@ -28,22 +33,24 @@ export async function findOneByCode(code) {
   }
 }
 
-export async function findAllPublished() {
+export async function findAllPublished(page = 1, search = "") {
   try {
     await dbConnector();
     const products = await Product.find({ status: productStatus.PUBLISHED });
-    return dbObjectToJsObject(products);
+    const res = getContentWithPagination(products, page, search);
+    return dbObjectToJsObject(res);
   } catch (error) {
-    console.log("error >> ", error);
+    console.log("findAllPublished error >> ", error);
     return { error: "Server error" };
   }
 }
 
-export async function findAllByUserId(userId) {
+export async function findAllByUserId(userId, page = 1, search = "") {
   try {
     await dbConnector();
     const products = await Product.find({ owner: userId });
-    return dbObjectToJsObject(products);
+    const res = getContentWithPagination(products, page, search);
+    return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllByUserId error >> ", error);
     return { error: "Server error" };
