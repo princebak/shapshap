@@ -65,7 +65,7 @@ export function getTotalNetPrice(list, accountType) {
 export const getContentWithPagination = (list, page, search) => {
   // Filters
   const filteredList = list.filter((item) => {
-    const regExp = new RegExp(search);
+    const regExp = new RegExp(search, 'i');
     const myJSON = JSON.stringify(item);
 
     return regExp.test(myJSON);

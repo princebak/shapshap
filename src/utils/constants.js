@@ -56,6 +56,7 @@ export const userType = {
   ADMIN: "admin",
   MERCHANT: "merchant",
   BUYER: "buyer",
+  DRIVER: "driver",
 };
 
 export const localLink = {
