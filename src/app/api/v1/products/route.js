@@ -1,7 +1,9 @@
+import AccessToken from "models/AccessToken";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { create, findAllPublished, update } from "services/ProductService";
 import { getRefusedAccessReason } from "services/UserService";
+import { userStatus } from "utils/constants";
 
 export async function POST(req) {
   const requestHeaders = headers();
@@ -14,6 +16,17 @@ export async function POST(req) {
     return NextResponse.json(
       { message: refusedAccess.message },
       { status: refusedAccess.status }
+    );
+  }
+
+  const userAccessToken =
+    await AccessToken.findById(userToken).populate("owner");
+  const user = userAccessToken?.owner;
+
+  if (user.status != userStatus.VALIDATED) {
+    return NextResponse.json(
+      { message: "Update your profile before to create a product." },
+      { status: 401 }
     );
   }
 

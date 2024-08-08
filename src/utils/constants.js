@@ -71,7 +71,7 @@ export const remoteLink = {
 };
 
 export const logMessage = {
-  USER_NOT_ACTIVE: "User is not active",
+  USER_NOT_ACTIVE: "User is not active, click on the validation link in your mail box please.",
 };
 
 export const codePrefix = {
