@@ -75,7 +75,7 @@ export async function updateProductStatusByCode(code, newStatus) {
     return { msg: "updateProductStatusByCode succeeded" };
   } catch (error) {
     console.log(" updateProductStateByCode error >> ", error);
-    return { error: "Server error" };
+    return { error: error };
   }
 }
 
@@ -91,7 +91,7 @@ export async function create(product) {
   } catch (error) {
     console.log("Product Creation error ", error);
 
-    return { error: "server error" };
+    return dbObjectToJsObject({ error: error });
   }
 }
 
@@ -107,6 +107,6 @@ export async function update(product) {
     return dbObjectToJsObject(updatedProduct._doc);
   } catch (error) {
     console.log("Product update error ", error);
-    return { error: "server error" };
+    return dbObjectToJsObject({ error: error });
   }
 }

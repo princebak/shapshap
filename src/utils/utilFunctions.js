@@ -1,4 +1,10 @@
-import { fees, PAGE_LIMIT, userType } from "./constants";
+import {
+  fees,
+  PAGE_LIMIT,
+  TOKEN_VALIDITY,
+  userTokenStatus,
+  userType,
+} from "./constants";
 
 export function dbObjectToJsObject(dbObject) {
   return JSON.parse(JSON.stringify(dbObject));
@@ -99,7 +105,6 @@ export const getContentWithPagination = (list, page, search) => {
   return res;
 };
 
-
 export const getTheDesiredPage = (str) => {
   // Regular expression to match a number after "Go to page "
   const regex = /Go to page (\d+)/;
@@ -108,4 +113,14 @@ export const getTheDesiredPage = (str) => {
   const match = str.match(regex);
 
   return match ? Number.parseInt(match[1]) : 1;
+};
+
+export const isTheUserTokenValid = (token) => {
+  const expirationDate = new Date(
+    token.updatedAt.getTime() + TOKEN_VALIDITY * 60000
+  );
+  const currentDate = new Date();
+  return (
+    currentDate.getTime() < expirationDate.getTime()
+  );
 };

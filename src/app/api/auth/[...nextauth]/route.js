@@ -1,11 +1,7 @@
 import NextAuth from "next-auth/next";
 
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcrypt";
-import User from "models/User";
-import { dbConnector } from "utils/dbConnector";
-import { emailMetadata, logMessage, userStatus } from "utils/constants";
-import { sendEmailWithEmailJs } from "services/NotificationService";
+import { authenticate } from "services/UserService";
 
 const handler = NextAuth({
   providers: [
@@ -23,41 +19,7 @@ const handler = NextAuth({
         },
       },
       async authorize(credentials, req) {
-        console.log("******** credentials **********");
-        console.log(credentials);
-
-        await dbConnector();
-
-        const user = await User.findOne({
-          email: credentials.email,
-        }).select("+password");
-
-        if (!user) {
-          throw new Error("Email is not registered");
-        }
-
-        const { password, ...userWithoutPassword } = user._doc;
-
-        if (user.status === userStatus.CREATED) {
-          await sendEmailWithEmailJs({
-            receiver: user,
-            subject: emailMetadata.SUBJECT_EMAIL_VALIDATION,
-            validationLink: emailMetadata.EMAIL_VALIDATION_LINK,
-          });
-
-          throw new Error(logMessage.USER_NOT_ACTIVE);
-        }
-
-        const isPasswordCorrect = await compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isPasswordCorrect) {
-          throw new Error("Password is incorrect");
-        }
-
-        return userWithoutPassword;
+        return await authenticate(credentials);
       },
     }),
   ],

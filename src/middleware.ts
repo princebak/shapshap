@@ -1,6 +1,8 @@
+import { headers } from "next/headers";
 import { NextResponse, NextRequest } from "next/server";
+import { getRefusedAccessReason } from "services/UserService";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
 
   if (

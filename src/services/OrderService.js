@@ -10,6 +10,7 @@ import { fees, orderStatus, userType } from "utils/constants";
 import { dbConnector } from "utils/dbConnector";
 import {
   dbObjectToJsObject,
+  getContentWithPagination,
   getTotalGrossPriceAndDiscount,
   getTotalNetPrice,
   groupProductsByVendor,
@@ -94,17 +95,30 @@ export async function findOrders() {
   }
 }
 
-export async function findMerchantOrders(merchantId) {
+export async function findMerchantOrders(merchantId, page = 1, search = "") {
   try {
     await dbConnector();
+    const orders = await MerchantOrder.find({ owner: merchantId }).populate(
+      "mainOrder"
+    );
+    const res = getContentWithPagination(orders, page, search);
+    return dbObjectToJsObject(res);
+  } catch (error) {
+    console.log("findAllByUserId error >> ", error);
+    return { error: "Server error" };
+  }
+}
 
-    const res = await MerchantOrder.find({ owner: merchantId }).populate(
+export async function findOneMerchantOrderByCode(code) {
+  try {
+    await dbConnector();
+    const order = await MerchantOrder.findOne({ code: code }).populate(
       "mainOrder"
     );
 
-    return dbObjectToJsObject(res);
+    return dbObjectToJsObject(order);
   } catch (error) {
-    console.log("Error >>", error);
+    console.log("error >> ", error);
     return { error: "Server error" };
   }
 }

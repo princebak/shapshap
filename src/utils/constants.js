@@ -18,6 +18,8 @@ export const userTokenStatus = {
   UNUSED: "unused",
   PENDING: "pending",
   USED: "used",
+  REFRESHED: "refreshed",
+  EXPIRED: "expired",
 };
 
 export const productStatus = {
@@ -100,3 +102,4 @@ export const fees = {
 };
 
 export const PAGE_LIMIT = 2;
+export const TOKEN_VALIDITY = 5; // set to 30 munites in prod
