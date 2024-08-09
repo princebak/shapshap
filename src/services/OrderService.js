@@ -76,7 +76,7 @@ export async function completeOrder(code) {
       }
     }
 
-    return dbObjectToJsObject(res);
+    return dbObjectToJsObject({ ...res, status: orderStatus.COMPLETED });
   } catch (error) {
     console.log("Error >>", error);
     return { error: "Server error" };

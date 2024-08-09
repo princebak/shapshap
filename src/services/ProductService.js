@@ -2,7 +2,7 @@
 
 import Product from "models/Product";
 import { generateProductCode } from "utils/codeGenerator";
-import { PAGE_LIMIT, productStatus } from "utils/constants";
+import { productStatus } from "utils/constants";
 import { dbConnector } from "utils/dbConnector";
 import {
   dbObjectToJsObject,
@@ -100,9 +100,13 @@ export async function update(product) {
     await dbConnector();
 
     const { _id, ...updatingProduct } = product;
-    const updatedProduct = await Product.findByIdAndUpdate(_id, {
-      ...updatingProduct,
-    });
+    const updatedProduct = await Product.findByIdAndUpdate(
+      _id,
+      {
+        ...updatingProduct,
+      },
+      { new: true }
+    );
 
     return dbObjectToJsObject(updatedProduct._doc);
   } catch (error) {

@@ -17,9 +17,9 @@ export async function PUT(req) {
     );
   }
 
-  const data = await req.json();
+  const {code} = await req.json();
 
-  const res = await completeOrder(data);
+  const res = await completeOrder(code);
 
   if (res.error) {
     return NextResponse.json(res.error, { status: 500 });

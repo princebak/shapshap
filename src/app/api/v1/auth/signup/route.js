@@ -9,7 +9,7 @@ export async function POST(req) {
     return NextResponse.json(
       {
         message:
-          "Complete the validation process through the link sent via your email, and then come back, please !",
+          "Registered with success, now complete the validation process through the link sent via your email, and then come back, please !",
       },
       { status: 200 }
     );
@@ -17,7 +17,7 @@ export async function POST(req) {
     console.log("Register Api Error : ", error);
     return NextResponse.json(
       {
-        message: "Server error",
+        error: error,
       },
       { status: 500 }
     );

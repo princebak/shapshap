@@ -22,7 +22,7 @@ export async function PUT(req) {
     console.log("Register Api Error : ", error);
     return NextResponse.json(
       {
-        message: "Server error",
+        error: error,
       },
       { status: 500 }
     );

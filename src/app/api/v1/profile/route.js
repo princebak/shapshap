@@ -21,8 +21,11 @@ export async function PUT(req) {
   const res = await updateUser(data);
 
   if (res.error) {
-    return NextResponse.json(res.error, { status: 500 });
+    return NextResponse.json({ error: res.error }, { status: 500 });
   }
 
-  return NextResponse.json(res, { status: 200 });
+  return NextResponse.json(
+    { message: "Profile updated with success !" },
+    { status: 200 }
+  );
 }

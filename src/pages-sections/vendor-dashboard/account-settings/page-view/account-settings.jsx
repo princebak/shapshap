@@ -54,7 +54,7 @@ export default function AccountSettingsPageView() {
     shopProfilPicUrl: currentUser?.shop?.profilPicUrl,
   };
 
-  // User Profile FORM FIELD VALIDATION SCHEMA
+  // User Profile FORM FIE LD VALIDATION SCHEMA
 
   const validationSchema = yup.object().shape({
     name: yup.string().required("Full Name is required"),
