@@ -49,6 +49,7 @@ export default function OrdersPageView() {
 
   useEffect(() => {
     findMerchantOrders(currentUser._id).then((res) => {
+      console.log("Orders res", res);
       const filteredOrders = res.content.map((item) => ({
         id: item?._id,
         code: item?.code,

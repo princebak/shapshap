@@ -117,8 +117,6 @@ export async function register(data) {
 export async function authenticate(data) {
   await dbConnector();
 
-  console.log("authenticating...", data);
-
   const user = await User.findOne({
     email: data.email,
   }).select("+password");

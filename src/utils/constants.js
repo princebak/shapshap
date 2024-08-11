@@ -72,7 +72,8 @@ export const remoteLink = {
 };
 
 export const logMessage = {
-  USER_NOT_ACTIVE: "User is not active, click on the validation link in your mail box please.",
+  USER_NOT_ACTIVE:
+    "User is not active, click on the validation link in your mail box please.",
 };
 
 export const codePrefix = {
@@ -102,5 +103,5 @@ export const fees = {
   TAX: 0,
 };
 
-export const PAGE_LIMIT = 2;
-export const TOKEN_VALIDITY = 5; // set to 30 munites in prod
+export const PAGE_LIMIT = 5;
+export const TOKEN_VALIDITY = 10; // set to 30 munites in prod

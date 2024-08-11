@@ -33,11 +33,11 @@ export async function findOneByCode(code) {
   }
 }
 
-export async function findAllPublished(page = 1, search = "") {
+export async function findAllPublished(page, search, limit) {
   try {
     await dbConnector();
     const products = await Product.find({ status: productStatus.PUBLISHED });
-    const res = getContentWithPagination(products, page, search);
+    const res = getContentWithPagination(products, page, search, limit);
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllPublished error >> ", error);
@@ -45,11 +45,11 @@ export async function findAllPublished(page = 1, search = "") {
   }
 }
 
-export async function findAllByUserId(userId, page = 1, search = "") {
+export async function findAllByUserId(userId, page, search, limit) {
   try {
     await dbConnector();
     const products = await Product.find({ owner: userId });
-    const res = getContentWithPagination(products, page, search);
+    const res = getContentWithPagination(products, page, search, limit);
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllByUserId error >> ", error);

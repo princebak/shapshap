@@ -4,6 +4,10 @@ import { findMerchantOrders } from "services/OrderService";
 import { getRefusedAccessReason } from "services/UserService";
 
 export async function GET(req, { params: { id } }) {
+  const page = req.nextUrl.searchParams.get("page");
+  const search = req.nextUrl.searchParams.get("search");
+  const limit = req.nextUrl.searchParams.get("limit");
+
   const requestHeaders = headers();
   const userToken = requestHeaders.get("userToken");
 
@@ -17,7 +21,7 @@ export async function GET(req, { params: { id } }) {
     );
   }
 
-  const ordersRes = await findMerchantOrders(id);
+  const ordersRes = await findMerchantOrders(id, page, search, limit);
 
   return NextResponse.json(ordersRes, { status: 200 });
 }

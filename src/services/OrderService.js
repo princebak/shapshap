@@ -42,8 +42,6 @@ export async function completeOrder(code) {
       "products.owner"
     );
 
-    console.log("completeOrder status >>", res.status);
-
     if (res.status !== orderStatus.COMPLETED) {
       await MyOrder.findOneAndUpdate(
         { code: code },
@@ -95,13 +93,13 @@ export async function findOrders() {
   }
 }
 
-export async function findMerchantOrders(merchantId, page = 1, search = "") {
+export async function findMerchantOrders(merchantId, page, search, limit) {
   try {
     await dbConnector();
     const orders = await MerchantOrder.find({ owner: merchantId }).populate(
       "mainOrder"
     );
-    const res = getContentWithPagination(orders, page, search);
+    const res = getContentWithPagination(orders, page, search, limit);
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllByUserId error >> ", error);

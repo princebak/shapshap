@@ -15,7 +15,11 @@ export async function POST(req) {
     const savedToken = await newToken.save();
 
     return NextResponse.json(
-      { message: "Logged in with success !", userToken: savedToken._id },
+      {
+        message: "Logged in with success !",
+        userToken: savedToken._id,
+        userInfo: loggedInUser,
+      },
       { status: 200 }
     );
   } catch (error) {

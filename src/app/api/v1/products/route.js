@@ -70,6 +70,10 @@ export async function GET(req) {
   const requestHeaders = headers();
   const userToken = requestHeaders.get("userToken");
 
+  const page = req.nextUrl.searchParams.get("page");
+  const search = req.nextUrl.searchParams.get("search");
+  const limit = req.nextUrl.searchParams.get("limit");
+
   // Is there any refused access reason ?
   const refusedAccess = await getRefusedAccessReason(userToken);
 
@@ -80,7 +84,7 @@ export async function GET(req) {
     );
   }
 
-  const productsRes = await findAllPublished();
+  const productsRes = await findAllPublished(page, search, limit);
 
   return NextResponse.json(productsRes, { status: 200 });
 }

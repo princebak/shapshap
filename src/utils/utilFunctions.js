@@ -62,34 +62,37 @@ export function getTotalNetPrice(list, accountType) {
   return totalNetPrice;
 }
 
-export const getContentWithPagination = (list, page, search) => {
+export const getContentWithPagination = (list, page, search, limit) => {
+  limit = limit ? Number.parseInt(limit) : PAGE_LIMIT;
+  search = search ? search : "";
+
   // Filters
   const filteredList = list.filter((item) => {
-    const regExp = new RegExp(search, 'i');
+    const regExp = new RegExp(search, "i");
     const myJSON = JSON.stringify(item);
 
     return regExp.test(myJSON);
   });
 
-  const totalPages = Math.ceil(filteredList.length / PAGE_LIMIT);
+  const totalPages = Math.ceil(filteredList.length / limit);
 
   // Sorting
   filteredList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   // Pagination
-  const pageNumber = Number.parseInt(page);
+  const pageNumber = page ? Number.parseInt(page) : 1;
 
   const currentPage =
     pageNumber < 1 ? 1 : pageNumber > totalPages ? totalPages : pageNumber;
 
-  const startIndex = (currentPage - 1) * PAGE_LIMIT;
+  const startIndex = (currentPage - 1) * limit;
   let listByPage = [];
 
   let index = startIndex;
   while (index >= 0 && index < filteredList.length) {
     listByPage.push(filteredList[index]);
     index++;
-    if (listByPage.length === PAGE_LIMIT) {
+    if (listByPage.length === limit) {
       break;
     }
   }
@@ -97,8 +100,8 @@ export const getContentWithPagination = (list, page, search) => {
   const res = {
     content: listByPage,
     totalElements: filteredList.length,
-    pageLimit: PAGE_LIMIT,
-    currentPage: pageNumber,
+    pageLimit: limit,
+    currentPage: currentPage,
     totalPages: totalPages,
   };
 
@@ -120,7 +123,5 @@ export const isTheUserTokenValid = (token) => {
     token.updatedAt.getTime() + TOKEN_VALIDITY * 60000
   );
   const currentDate = new Date();
-  return (
-    currentDate.getTime() < expirationDate.getTime()
-  );
+  return currentDate.getTime() < expirationDate.getTime();
 };
