@@ -16,10 +16,15 @@ import useSales from "../use-sales";
 // PRODUCT DATA LIST
 
 import { useEffect, useState } from "react";
-import { findAllPublished } from "services/ProductService";
+import {
+  findAllPublished,
+  findAllPublishedByCategory,
+} from "services/ProductService";
 import { loadProducts } from "redux/slices/productSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getTheDesiredPage } from "utils/utilFunctions";
+import { useSearchParams } from "next/navigation";
+import NoData from "components/customs/NoData";
 
 export default function SalesTwoPageView() {
   const { categories, selectedCategory, handleCategoryChange } = useSales(
@@ -27,30 +32,39 @@ export default function SalesTwoPageView() {
     1
   );
 
+  /* const searchParams = useSearchParams();
+  const pageIn = searchParams.get("page");
+  const search = searchParams.get("search");
+  const category = searchParams.get("category"); */
+
   // Pagination and Search
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
   const [totalElements, setTotalElements] = useState(0);
   const [pageLimit, setPageLimit] = useState();
   const [totalPages, setTotalPages] = useState(0);
   const distpatch = useDispatch();
+  // const { productList: list } = useSelector((state) => state.product);
 
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState([]); //useState(list);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    console.log("useEffect", page);
     const loadProductList = async () => {
-      const res = await findAllPublished(page, search);
-      console.log("TEST59 >> ", res);
+      /* const res = category
+        ? await findAllPublishedByCategory(page, search, category, null)
+        : await findAllPublished(page, search); */
+
+      const res = await findAllPublished(page, "");
       setProductList(res.content);
       setPageLimit(res.pageLimit);
       setTotalElements(res.totalElements);
       setPage(res.currentPage);
       setTotalPages(res.totalPages);
       distpatch(loadProducts(res.content));
+      // setIsDataLoaded(true);
     };
     loadProductList();
-  }, [page, search]);
+  }, [page]);
 
   const handleChangePage = (e) => {
     const el = e.target.outerHTML;
@@ -89,16 +103,20 @@ export default function SalesTwoPageView() {
   return (
     <SalesLayout type="two" categoryNav={""}>
       <Container className="mt-2">
-        {/* PRODUCT LIST AREA */}
-        <ProductList products={productList} />
+        {productList.length > 0 ? (
+          <>
+            <ProductList products={productList} />
 
-        {/* PAGINATION AREA */}
-        <ProductPagination
-          page={page}
-          perPage={pageLimit}
-          handlePageChange={handleChangePage}
-          totalProducts={totalElements}
-        />
+            <ProductPagination
+              page={page}
+              perPage={pageLimit}
+              handlePageChange={handleChangePage}
+              totalProducts={totalElements}
+            />
+          </>
+        ) : (
+          <NoData message="There is no article yet." />
+        )}
       </Container>
     </SalesLayout>
   );

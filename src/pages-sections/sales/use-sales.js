@@ -35,7 +35,6 @@ export default function useSales(
   useEffect(() => {
     api.getProducts(page).then((data) => setProductList(data));
   }, [page]);
-  console.log("categories >> ", categories);
   return {
     page,
     categories,

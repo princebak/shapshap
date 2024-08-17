@@ -36,11 +36,28 @@ export async function findOneByCode(code) {
 export async function findAllPublished(page, search, limit) {
   try {
     await dbConnector();
-    const products = await Product.find({ status: productStatus.PUBLISHED });
+    const products = await Product.find({
+      status: productStatus.PUBLISHED,
+    });
     const res = getContentWithPagination(products, page, search, limit);
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllPublished error >> ", error);
+    return { error: "Server error" };
+  }
+}
+
+export async function findAllPublishedByCategory(page, search, category, limit) {
+  try {
+    await dbConnector();
+    const products = await Product.find({
+      status: productStatus.PUBLISHED,
+      categories: { $in: [category] },
+    });
+    const res = getContentWithPagination(products, page, search, limit);
+    return dbObjectToJsObject(res);
+  } catch (error) {
+    console.log("findAllPublishedByCategory error >> ", error);
     return { error: "Server error" };
   }
 }

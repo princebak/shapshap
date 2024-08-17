@@ -38,7 +38,7 @@ export async function POST(req) {
     return NextResponse.json(res.error, { status: 500 });
   }
 
-  return NextResponse.json(res, { status: 200 });
+  return NextResponse.json({ data: res }, { status: 200 });
 }
 
 export async function PUT(req) {
@@ -63,7 +63,7 @@ export async function PUT(req) {
     return NextResponse.json(res.error, { status: 500 });
   }
 
-  return NextResponse.json(res, { status: 200 });
+  return NextResponse.json({ data: res }, { status: 200 });
 }
 
 export async function GET(req) {
