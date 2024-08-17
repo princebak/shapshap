@@ -3,8 +3,8 @@ import { register } from "services/UserService";
 
 export async function POST(req) {
   try {
-    const { name, email, phone, password } = await req.json();
-    const res = await register({ name, email, phone, password });
+    const { name, email, phone, type, password } = await req.json();
+    const res = await register({ name, email, phone, type, password });
 
     if (res.error) {
       return NextResponse.json(

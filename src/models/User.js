@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { userStatus } from "utils/constants";
+import { userStatus, userType } from "utils/constants";
 
 const Schema = mongoose.Schema;
 
@@ -36,7 +36,7 @@ const userSchema = new Schema(
     type: {
       type: String,
       required: true,
-      default: "client",
+      default: userType.MERCHANT,
     },
     shop: {
       type: {

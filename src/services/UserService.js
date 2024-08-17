@@ -52,7 +52,33 @@ const validatePhone = (phone) => {
   return phone.length <= 20;
 };
 
-const validateForm = async (fullName, email, phone, password) => {
+const validateUserType = (type) => {
+  console.log("Type >>", type);
+
+  if (!type) {
+    return false;
+  }
+  if (type === "updateUser") {
+    return true;
+  }
+  if (
+    type !== userType.ADMIN &&
+    type !== userType.BUYER &&
+    type !== userType.DRIVER &&
+    type !== userType.MERCHANT
+  ) {
+    return false;
+  }
+  return true;
+};
+
+const validateForm = async (fullName, email, phone, type, password) => {
+  if (!validateUserType(type)) {
+    return {
+      error: "A type in this list[admin, buyer, driver, merchant] is required.",
+    };
+  }
+
   if (!validateFullName(fullName)) {
     return { error: "A Name with at last 150 caracters is required." };
   }
@@ -85,10 +111,16 @@ const validateForm = async (fullName, email, phone, password) => {
 };
 
 export async function register(data) {
-  const { name, email, phone, password } = data;
+  const { name, email, phone, type, password } = data;
   await dbConnector();
 
-  const validateFormRes = await validateForm(name, email, phone, password);
+  const validateFormRes = await validateForm(
+    name,
+    email,
+    phone,
+    type,
+    password
+  );
 
   if (validateFormRes) {
     return validateFormRes;
@@ -109,7 +141,7 @@ export async function register(data) {
   const newUser = new User(goodData);
 
   try {
-    const savedUser = await newUser.save();
+    /*     const savedUser = await newUser.save();
 
     await sendEmailWithEmailJs({
       receiver: savedUser,
@@ -119,7 +151,8 @@ export async function register(data) {
 
     const { _id, name, email } = savedUser._doc;
 
-    return { _id, name, email };
+    return { _id, name, email }; */
+    return goodData;
   } catch (error) {
     console.log("Error >> ", error);
     return { error: error.message };
@@ -168,11 +201,12 @@ export async function updateUser(data) {
     name,
     "updateUser",
     phone,
+    "updateUser",
     "updateUser"
   ); // TODO add shop fields
 
   if (validateFormRes) {
-    return validateFormRes; // Text response if invalid
+    return validateFormRes; // Text response if invalid in error obj
   }
 
   try {
@@ -247,19 +281,18 @@ export async function getRefusedAccessReason(userToken) {
     return { message: "Unauthorized, a user token is required !", status: 401 };
   }
 
+  if (userToken.length !== 24) {
+    return {
+      message: "Invalid token, please check the it again !",
+      status: 400,
+    };
+  }
+
   await dbConnector();
 
   let existingToken = null;
 
-  try {
-    existingToken = await AccessToken.findById(userToken);
-  } catch (error) {
-    console.log("Error, existingToken ", existingToken);
-    return {
-      message: "Bad request!",
-      status: 400,
-    };
-  }
+  existingToken = await AccessToken.findById(userToken).populate("owner");
 
   if (!existingToken) {
     return {
@@ -284,5 +317,5 @@ export async function getRefusedAccessReason(userToken) {
     status: userTokenStatus.REFRESHED,
   });
 
-  return null;
+  return null; // no refused access reason
 }
