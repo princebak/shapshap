@@ -23,5 +23,9 @@ export async function GET(req, { params: { id } }) {
 
   const ordersRes = await findMerchantOrders(id, page, search, limit);
 
+  if (ordersRes.error) {
+    return NextResponse.json({ error: ordersRes.error }, { status: 400 });
+  }
+
   return NextResponse.json(ordersRes, { status: 200 });
 }

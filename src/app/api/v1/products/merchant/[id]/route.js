@@ -1,12 +1,9 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import {
-  findAllByUserId,
-} from "services/ProductService";
+import { findAllByUserId } from "services/ProductService";
 import { getRefusedAccessReason } from "services/UserService";
 
 export async function GET(req, { params: { id } }) {
-
   const page = req.nextUrl.searchParams.get("page");
   const search = req.nextUrl.searchParams.get("search");
   const limit = req.nextUrl.searchParams.get("limit");
@@ -25,6 +22,10 @@ export async function GET(req, { params: { id } }) {
   }
 
   const productsRes = await findAllByUserId(id, page, search, limit);
+  
+  if (productsRes.error) {
+    return NextResponse.json({ error: productsRes.error }, { status: 400 });
+  }
 
   return NextResponse.json(productsRes, { status: 200 });
 }

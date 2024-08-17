@@ -23,6 +23,7 @@ export async function POST(req) {
       { status: 200 }
     );
   } catch (error) {
-    return NextResponse.json({ error: error }, { status: 500 });
+    console.log("MyErr >> ", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

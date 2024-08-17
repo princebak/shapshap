@@ -21,6 +21,7 @@ export async function PUT(req) {
   const res = await updateUser(data);
 
   if (res.error) {
+    console.log("MyError <> ", error);
     return NextResponse.json({ error: res.error }, { status: 500 });
   }
 

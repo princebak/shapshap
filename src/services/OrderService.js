@@ -30,7 +30,7 @@ export async function createOrder(order) {
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("Error >>", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
@@ -77,7 +77,7 @@ export async function completeOrder(code) {
     return dbObjectToJsObject({ ...res, status: orderStatus.COMPLETED });
   } catch (error) {
     console.log("Error >>", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
@@ -89,12 +89,16 @@ export async function findOrders() {
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("Error >>", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
 export async function findMerchantOrders(merchantId, page, search, limit) {
   try {
+    if (merchantId?.length < 24) {
+      return { error: "The user Id is not valid." };
+    }
+
     await dbConnector();
     const orders = await MerchantOrder.find({ owner: merchantId }).populate(
       "mainOrder"
@@ -103,7 +107,7 @@ export async function findMerchantOrders(merchantId, page, search, limit) {
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllByUserId error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
@@ -117,6 +121,6 @@ export async function findOneMerchantOrderByCode(code) {
     return dbObjectToJsObject(order);
   } catch (error) {
     console.log("error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }

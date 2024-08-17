@@ -18,6 +18,9 @@ import { dbObjectToJsObject, isTheUserTokenValid } from "utils/utilFunctions";
 
 const validateEmail = (email) => {
   const regExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  if (!email) {
+    return false;
+  }
   if (email === "updateUser") {
     return true;
   }
@@ -26,10 +29,16 @@ const validateEmail = (email) => {
 };
 
 const validateFullName = (fullName) => {
+  if (!fullName) {
+    return false;
+  }
   return fullName.length <= 150;
 };
 
 const validatePassword = (password) => {
+  if (!password) {
+    return false;
+  }
   if (password === "updateUser") {
     return true;
   }
@@ -37,27 +46,30 @@ const validatePassword = (password) => {
 };
 
 const validatePhone = (phone) => {
+  if (!phone) {
+    return false;
+  }
   return phone.length <= 20;
 };
 
 const validateForm = async (fullName, email, phone, password) => {
   if (!validateFullName(fullName)) {
-    return { error: "Invalid name, too long." };
+    return { error: "A Name with at last 150 caracters is required." };
   }
 
   if (!validateEmail(email)) {
-    return { error: "The email is invalid" };
+    return { error: "A valid email is required." };
   }
 
   if (!validatePassword(password)) {
     return {
-      error: "The passwor is invalid",
+      error: "A password with at least 5 caracters is required.",
     };
   }
 
   if (!validatePhone(phone)) {
     return {
-      error: "The phone is invalid",
+      error: "A phone number with at last 20 caracters is required.",
     };
   }
 
@@ -110,7 +122,7 @@ export async function register(data) {
     return { _id, name, email };
   } catch (error) {
     console.log("Error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
@@ -178,7 +190,7 @@ export async function updateUser(data) {
     return dbObjectToJsObject(savedUser._doc);
   } catch (error) {
     console.log("Error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 

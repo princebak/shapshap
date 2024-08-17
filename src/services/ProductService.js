@@ -18,7 +18,7 @@ export async function findAll(page = 1, search = "") {
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
@@ -29,7 +29,7 @@ export async function findOneByCode(code) {
     return dbObjectToJsObject(product);
   } catch (error) {
     console.log("error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
@@ -43,11 +43,16 @@ export async function findAllPublished(page, search, limit) {
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllPublished error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
-export async function findAllPublishedByCategory(page, search, category, limit) {
+export async function findAllPublishedByCategory(
+  page,
+  search,
+  category,
+  limit
+) {
   try {
     await dbConnector();
     const products = await Product.find({
@@ -58,19 +63,22 @@ export async function findAllPublishedByCategory(page, search, category, limit) 
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllPublishedByCategory error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
 export async function findAllByUserId(userId, page, search, limit) {
   try {
+    if (userId?.length < 24) {
+      return { error: "The user Id is not valid." };
+    }
     await dbConnector();
     const products = await Product.find({ owner: userId });
     const res = getContentWithPagination(products, page, search, limit);
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("findAllByUserId error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 
@@ -81,7 +89,7 @@ export async function findProductByCode(code) {
     return dbObjectToJsObject(prod);
   } catch (error) {
     console.log("findProductByCode error >> ", error);
-    return { error: "Server error" };
+    return { error: error.message };
   }
 }
 

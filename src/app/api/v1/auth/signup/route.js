@@ -4,7 +4,16 @@ import { register } from "services/UserService";
 export async function POST(req) {
   try {
     const { name, email, phone, password } = await req.json();
-    await register({ name, email, phone, password });
+    const res = await register({ name, email, phone, password });
+
+    if (res.error) {
+      return NextResponse.json(
+        {
+          error: res.error,
+        },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json(
       {
@@ -17,7 +26,7 @@ export async function POST(req) {
     console.log("Register Api Error : ", error);
     return NextResponse.json(
       {
-        error: error,
+        error: error.message,
       },
       { status: 500 }
     );
