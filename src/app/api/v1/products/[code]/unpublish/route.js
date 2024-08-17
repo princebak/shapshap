@@ -4,7 +4,7 @@ import { updateProductStatusByCode } from "services/ProductService";
 import { getRefusedAccessReason } from "services/UserService";
 import { productStatus } from "utils/constants";
 
-export async function PUT(req) {
+export async function PUT(req, { params: { code } }) {
   try {
     const requestHeaders = headers();
     const userToken = requestHeaders.get("userToken");
@@ -18,7 +18,6 @@ export async function PUT(req) {
         { status: refusedAccess.status }
       );
     }
-    const { code } = await req.json();
     const res = await updateProductStatusByCode(
       code,
       productStatus.UNPUBLISHED
