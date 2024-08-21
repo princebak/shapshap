@@ -17,6 +17,7 @@ export async function POST(req) {
 
     return NextResponse.json(
       {
+        data: res,
         message:
           "Registered with success, now complete the validation process through the link sent via your email, and then come back, please !",
       },

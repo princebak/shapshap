@@ -152,7 +152,6 @@ export async function register(data) {
     const { _id, name, email } = savedUser._doc;
 
     return { _id, name, email };
-    return goodData;
   } catch (error) {
     console.log("Error >> ", error);
     return { error: error.message };
