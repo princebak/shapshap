@@ -141,7 +141,7 @@ export async function register(data) {
   const newUser = new User(goodData);
 
   try {
-    /*     const savedUser = await newUser.save();
+    const savedUser = await newUser.save();
 
     await sendEmailWithEmailJs({
       receiver: savedUser,
@@ -151,7 +151,7 @@ export async function register(data) {
 
     const { _id, name, email } = savedUser._doc;
 
-    return { _id, name, email }; */
+    return { _id, name, email };
     return goodData;
   } catch (error) {
     console.log("Error >> ", error);
