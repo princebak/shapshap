@@ -209,14 +209,15 @@ export async function updateUser(data) {
   }
 
   try {
-    const savedUser = await User.findByIdAndUpdate(
-      data._id,
-      {
-        ...data,
-        status: userStatus.VALIDATED, // TODO when the block user flow is done this has to be conditional (only if user is active)
-      },
-      { new: true }
-    );
+
+    const existingUser = await User.findById(data._id);
+    if (existingUser.status === userStatus.ACTIVE && data.shop ) {
+      data = { ...data, status: userStatus.VALIDATED };
+    }
+
+    const savedUser = await User.findByIdAndUpdate(data._id, data, {
+      new: true,
+    });
 
     console.log("savedUser .. ", savedUser);
 
