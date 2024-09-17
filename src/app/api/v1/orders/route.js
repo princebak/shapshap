@@ -1,9 +1,13 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { findOneMainOrderByCode } from "services/OrderService";
+import { findOrders } from "services/OrderService";
 import { getRefusedAccessReason } from "services/UserService";
 
-export async function GET(req, { params: { code } }) {
+export async function GET(req) {
+  const page = req.nextUrl.searchParams.get("page");
+  const search = req.nextUrl.searchParams.get("search");
+  const limit = req.nextUrl.searchParams.get("limit");
+
   const requestHeaders = headers();
   const userToken = requestHeaders.get("userToken");
 
@@ -17,14 +21,11 @@ export async function GET(req, { params: { code } }) {
     );
   }
 
-  if (!code) {
-    return NextResponse.json(
-      { message: "Bad request, the code is required." },
-      { status: 400 }
-    );
+  const ordersRes = await findOrders(id, page, search, limit);
+
+  if (ordersRes.error) {
+    return NextResponse.json({ error: ordersRes.error }, { status: 400 });
   }
 
-  const order = await findOneMainOrderByCode(code);
-
-  return NextResponse.json(order, { status: 200 });
+  return NextResponse.json(ordersRes, { status: 200 });
 }

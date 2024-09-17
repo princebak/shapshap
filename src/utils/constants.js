@@ -28,18 +28,20 @@ export const productStatus = {
   UNPUBLISHED: "unpublished",
 };
 
-export const orderStatus = {
-  CREATED: "created",
-  PROCESSING: "processing",
+export const paymentStatus = {
+  UNPAID: "unpaid",
   PAID: "paid",
-  PENDING: "pending",
-  DELIVERED: "delivered",
   CANCELLED: "cancelled",
-  COMPLETED: "completed",
+};
+
+export const deliveryStatus = {
+  IN_STORE: "in-store",
+  ON_THE_WAY: "on-the-way",
+  DELIVERED: "delivered",
 };
 
 export const paymentMethod = {
-  CREDIT_DEBIT: "Credit/Debit",
+  CREDIT_DEBIT: "credit/debit",
   PAYPAL: "paypal",
   CASH: "cash",
 };

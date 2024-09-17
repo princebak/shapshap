@@ -19,7 +19,7 @@ import {
 
 // ========================================================================
 export default function OrderRow({ order }) {
-  const { amount, code, qty, purchaseDate, billingAddress, status } = order;
+  const { amount, code, qty, purchaseDate, billingAddress, paymentStatus } = order;
   const router = useRouter();
   return (
     <StyledTableRow tabIndex={-1} role="checkbox">
@@ -47,7 +47,7 @@ export default function OrderRow({ order }) {
       <StyledTableCell align="left">{currency(amount)}</StyledTableCell>
 
       <StyledTableCell align="left">
-        <StatusWrapper status={status}>{status}</StatusWrapper>
+        <StatusWrapper status={paymentStatus}>{paymentStatus}</StatusWrapper>
       </StyledTableCell>
 
       <StyledTableCell align="center">

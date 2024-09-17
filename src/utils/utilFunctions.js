@@ -1,7 +1,9 @@
+import User from "models/User";
 import {
   fees,
   PAGE_LIMIT,
   TOKEN_VALIDITY,
+  userStatus,
   userTokenStatus,
   userType,
 } from "./constants";
@@ -124,4 +126,26 @@ export const isTheUserTokenValid = (token) => {
   );
   const currentDate = new Date();
   return currentDate.getTime() < expirationDate.getTime();
+};
+
+export const getDefaultCustomer = async () => {
+  let defaultCustomer = await User.findOne({
+    email: "anonnymuser@gmail.com",
+  });
+  if (!defaultCustomer) {
+    const savingUser = new User({
+      code: "USER00000001",
+      name: "Anonnym User",
+      email: "anonnymuser@gmail.com",
+      phone: "0900000000",
+      address: "Kinshasa, DRC",
+      country: "DRC",
+      password: "*anonnym@2024*",
+      profilPicUrl: "/assets/images/default_user.png",
+      status: userStatus.VALIDATED,
+    });
+    defaultCustomer = await savingUser.save();
+  }
+
+  return defaultCustomer;
 };

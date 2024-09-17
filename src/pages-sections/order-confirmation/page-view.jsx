@@ -10,7 +10,7 @@ import styled from "@mui/material/styles/styled";
 import BazaarCard from "components/BazaarCard";
 import { H1, Paragraph } from "components/Typography";
 import { useDispatch, useSelector } from "react-redux";
-import { orderStatus } from "utils/constants";
+import { paymentStatus } from "utils/constants";
 import { useRouter } from "next/navigation";
 import { completeOrder } from "services/OrderService";
 import { useEffect, useState } from "react";
@@ -34,7 +34,7 @@ export default function OrderConfirmationPageView() {
 
   useEffect(() => {
     const completeTheOrder = async () => {
-      if (currentOrder?.status === orderStatus.PROCESSING) {
+      if (currentOrder?.status === paymentStatus.PROCESSING) {
         await completeOrder(currentOrder.code);
       }
     };

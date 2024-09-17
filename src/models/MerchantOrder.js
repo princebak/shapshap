@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { fees, orderStatus } from "utils/constants";
+import { fees, paymentStatus } from "utils/constants";
 
 const Schema = mongoose.Schema;
 
@@ -14,7 +14,7 @@ const merchantOrderSchema = new Schema(
       ref: "MyOrder",
     },
     code: { type: String, required: true, maxLength: 20 },
-    status: { type: String, required: true, default: orderStatus.CREATED },
+    status: { type: String, required: true, default: paymentStatus.CREATED },
     products: [],
     grossTotalPrice: { type: Number },
     totalDiscount: { type: Number },

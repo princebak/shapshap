@@ -1,12 +1,26 @@
 import mongoose from "mongoose";
-import { fees, orderStatus } from "utils/constants";
+import { deliveryStatus, paymentStatus } from "utils/constants";
 
 const Schema = mongoose.Schema;
 
 const myOrderSchema = new Schema(
   {
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     code: { type: String, required: true, maxLength: 20 },
-    status: { type: String, required: true, default: orderStatus.CREATED },
+    paymentStatus: {
+      type: String,
+      required: true,
+      default: paymentStatus.UNPAID,
+    },
+    deliveryStatus: {
+      type: String,
+      required: true,
+      default: deliveryStatus.IN_STORE,
+    },
     products: [],
     shippingAddress: {
       type: {
@@ -58,6 +72,7 @@ const myOrderSchema = new Schema(
   { timestamps: true }
 );
 
-const MyOrder = mongoose.models?.MyOrder || mongoose.model("MyOrder", myOrderSchema);
+const MyOrder =
+  mongoose.models?.MyOrder || mongoose.model("MyOrder", myOrderSchema);
 
 export default MyOrder;

@@ -6,24 +6,29 @@ import {
   generateMerchantOrderCode,
   generateOrderCode,
 } from "utils/codeGenerator";
-import { fees, orderStatus, userType } from "utils/constants";
+import { fees, paymentStatus, userType } from "utils/constants";
 import { dbConnector } from "utils/dbConnector";
 import {
   dbObjectToJsObject,
   getContentWithPagination,
   getTotalGrossPriceAndDiscount,
   getTotalNetPrice,
-  groupProductsByVendor,
+  groupListByVendor,
 } from "utils/utilFunctions";
 
 export async function createOrder(order) {
   try {
     await dbConnector();
+    const defaultCustomer = await getDefaultCustomer();
+    
+    let customer = order?.owner || defaultCustomer;
     const code = await generateOrderCode();
     const data = {
-      code,
       ...order,
+      code,
+      owner: customer,
     };
+    console.log("New order >> ", data);
     const newOrder = new MyOrder(data);
     const res = await newOrder.save();
 
@@ -42,12 +47,12 @@ export async function completeOrder(code) {
       "products.owner"
     );
 
-    if (res.status !== orderStatus.COMPLETED) {
+    if (res.paymentStatus !== paymentStatus.PAID) {
       await MyOrder.findOneAndUpdate(
         { code: code },
-        { status: orderStatus.COMPLETED }
+        { paymentStatus: paymentStatus.PAID }
       );
-      const productsByVendor = groupProductsByVendor(res.products);
+      const productsByVendor = groupListByVendor(res.products);
 
       for (const owner in productsByVendor) {
         const code = await generateMerchantOrderCode();
@@ -61,7 +66,7 @@ export async function completeOrder(code) {
           products: ownerProducts,
           mainOrder: res._id,
           code: code,
-          status: orderStatus.COMPLETED,
+          paymentStatus: paymentStatus.PAID,
           grossTotalPrice: grossTotalPrice,
           totalDiscount: totalDiscount,
           commission: fees.COMMISSION,
@@ -74,21 +79,39 @@ export async function completeOrder(code) {
       }
     }
 
-    return dbObjectToJsObject({ ...res, status: orderStatus.COMPLETED });
+    return dbObjectToJsObject({ ...res, paymentStatus: paymentStatus.PAID });
   } catch (error) {
     console.log("Error >>", error);
     return { error: error.message };
   }
 }
 
-export async function findOrders() {
+export async function findOrders(page, search, limit) {
   try {
     await dbConnector();
-    const res = await MyOrder.find();
+    const orders = await MyOrder.find();
+
+    const res = getContentWithPagination(orders, page, search, limit);
 
     return dbObjectToJsObject(res);
   } catch (error) {
     console.log("Error >>", error);
+    return { error: error.message };
+  }
+}
+
+export async function findBuyerOrders(buyerId, page, search, limit) {
+  try {
+    if (buyerId?.length < 24) {
+      return { error: "The buyer Id is not valid." };
+    }
+
+    await dbConnector();
+    const orders = await MyOrder.find({ owner: buyerId });
+    const res = getContentWithPagination(orders, page, search, limit);
+    return dbObjectToJsObject(res);
+  } catch (error) {
+    console.log("findAllByUserId error >> ", error);
     return { error: error.message };
   }
 }
@@ -117,6 +140,18 @@ export async function findOneMerchantOrderByCode(code) {
     const order = await MerchantOrder.findOne({ code: code }).populate(
       "mainOrder"
     );
+
+    return dbObjectToJsObject(order);
+  } catch (error) {
+    console.log("error >> ", error);
+    return { error: error.message };
+  }
+}
+
+export async function findOneMainOrderByCode(code) {
+  try {
+    await dbConnector();
+    const order = await MyOrder.findOne({ code: code });
 
     return dbObjectToJsObject(order);
   } catch (error) {

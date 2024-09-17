@@ -7,6 +7,7 @@ const productSchema = new Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     code: {
       type: String,
@@ -17,6 +18,10 @@ const productSchema = new Schema(
       type: String,
       required: true,
       maxLength: 150,
+    },
+    quantity: {
+      type: number,
+      default: 1,
     },
     description: {
       type: String,

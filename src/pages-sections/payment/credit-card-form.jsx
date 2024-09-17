@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import Loader from "components/Loader";
 import MessageAlert from "components/MessageAlert";
-import { localLink, orderStatus, paymentMethod } from "utils/constants";
+import { localLink, paymentStatus, paymentMethod } from "utils/constants";
 import { changeOrder } from "redux/slices/orderSlice";
 import { createOrder } from "services/OrderService";
 
@@ -35,6 +35,7 @@ export default function CreditCardForm({ amount }) {
   const [loading, setLoading] = useState(false);
   const [savedOrderCode, setSavedOrderCode] = useState(null);
   const { currentOrder } = useSelector((state) => state.order);
+  const { currentUser } = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
 
@@ -65,8 +66,9 @@ export default function CreditCardForm({ amount }) {
       // When the payment is done, the Order can be completed
       const newOrder = {
         ...currentOrder,
-        status: orderStatus.PROCESSING,
+        status: paymentStatus.UNPAID,
         paymentMethod: paymentMethod.CREDIT_DEBIT,
+        owner: currentUser?._id,
       };
 
       const savedOrder = await createOrder(newOrder);
@@ -95,7 +97,7 @@ export default function CreditCardForm({ amount }) {
       dispatch(
         changeOrder({
           code: savedOrderCode,
-          status: orderStatus.PROCESSING,
+          status: paymentStatus.PROCESSING,
           paymentMethod: paymentMethod.CREDIT_DEBIT,
         })
       );
